@@ -8,8 +8,8 @@
     <!-- ====================================================================================================================================================== -->
     <!-- ==== Import                                                                                                                                       ==== -->
     <!-- ====================================================================================================================================================== -->
-    <xs:import namespace="urn:pl:oire:businessDataTypes:v1" schemaLocation="../businessDataTypes.xsd"/>
-    <xs:import namespace="urn:pl:oire:technical:v1" schemaLocation="../technical.xsd"/>
+    <xs:import namespace="urn:pl:oire:businessDataTypes:v1" schemaLocation="./businessDataTypes.xsd"/>
+    <xs:import namespace="urn:pl:oire:technical:v1" schemaLocation="./technical.xsd"/>
     
     <!-- ====================================================================================================================================================== -->
     <!-- ==== 6.1.1.5. Przekazanie dobowego profilu zużycia w ramach usługi przekierowania                                                                 ==== -->

@@ -1,4 +1,5 @@
 import datetime
+import random
 
 from lxml import etree
 from datetime import datetime
@@ -7,8 +8,18 @@ import uuid
 from readExcel import getSheets
 
 #Początek stałych
+nsmap = {
+    "u": "urn:pl:oire:unk_6_1_1_5:v1",
+    "t": "urn:pl:oire:technical:v1"
+}
+t = "{{{0}}}".format(nsmap["t"])
+u = "{{{0}}}".format(nsmap["u"])
+
 now_utc = datetime.now(timezone('UTC'))
 today = now_utc.astimezone(timezone('CET'))
+
+napiecia= ["CK1141","CK1142","CK1143"]
+straty= ["CK1144","CK1145","CK1146","CK1147"]
 
 MessageIdText = str(uuid.uuid4())
 MessageTypeText = "6.1_1"
@@ -38,109 +49,119 @@ ResolutionDurationText = "CK0098"
 
 
 def koperta():
-    root = etree.Element("DailyMeteringPointMeasurementsNotification")
+    root = etree.Element("{urn:pl:oire:unk_6_1_1_5:v1}DailyMeteringPointMeasurementsForwardNotification", nsmap=nsmap)
 
-    Header = etree.SubElement(root, "Header")
-    MessageId = etree.SubElement(Header, "MessageId")
+    Header = etree.SubElement(root, u+"Header")
+    MessageId = etree.SubElement(Header, t+"MessageId")
     MessageId.text = MessageIdText
-    MessageType= etree.SubElement(Header,"MessageType")
+    MessageType= etree.SubElement(Header, t+"MessageType")
     MessageType.text = MessageTypeText
-    MessageTypeResponsibleOrganization = etree.SubElement(Header,"MessageTypeResponsibleOrganization")
+    MessageTypeResponsibleOrganization = etree.SubElement(Header, t+"MessageTypeResponsibleOrganization")
     MessageTypeResponsibleOrganization.text = MessageTypeResponsibleOrganizationText
-    MessageTimestamp = etree.SubElement(Header,"MessageTimestamp")
+    MessageTimestamp = etree.SubElement(Header, t+"MessageTimestamp")
     MessageTimestamp.text = MessageTimestampText
-    PhysicalSenderId = etree.SubElement(Header,"PhysicalSenderId")
+    PhysicalSenderId = etree.SubElement(Header, t+"PhysicalSenderId")
     PhysicalSenderId.text = PhysicalSenderIdText
-    PhysicalSenderIdResponsibleOrganization = etree.SubElement(Header,"PhysicalSenderIdResponsibleOrganization")
+    PhysicalSenderIdResponsibleOrganization = etree.SubElement(Header, t+"PhysicalSenderIdResponsibleOrganization")
     PhysicalSenderIdResponsibleOrganization.text= PhysicalSenderIdResponsibleOrganizationText
-    JuridicalSenderId = etree.SubElement(Header,"JuridicalSenderId")
+    JuridicalSenderId = etree.SubElement(Header, t+"JuridicalSenderId")
     JuridicalSenderId.text = JuridicalSenderIdText
-    JuridicalSenderIdResponsibleOrganization = etree.SubElement(Header,"JuridicalSenderIdResponsibleOrganization")
+    JuridicalSenderIdResponsibleOrganization = etree.SubElement(Header, t+"JuridicalSenderIdResponsibleOrganization")
     JuridicalSenderIdResponsibleOrganization.text = JuridicalSenderIdResponsibleOrganizationText
-    PhysicalRecipientId = etree.SubElement(Header,"PhysicalRecipientId")
+    PhysicalRecipientId = etree.SubElement(Header, t+"PhysicalRecipientId")
     PhysicalRecipientId.text = PhysicalRecipientIdText
-    PhysicalRecipientIdResponsibleOrganization = etree.SubElement(Header,"PhysicalRecipientIdResponsibleOrganization")
+    PhysicalRecipientIdResponsibleOrganization = etree.SubElement(Header, t+"PhysicalRecipientIdResponsibleOrganization")
     PhysicalRecipientIdResponsibleOrganization.text = PhysicalRecipientIdResponsibleOrganizationText
-    JuridicalRecipientId = etree.SubElement(Header,"JuridicalRecipientId")
+    JuridicalRecipientId = etree.SubElement(Header, t+"JuridicalRecipientId")
     JuridicalRecipientId.text = JuridicalRecipientIdText
-    JuridicalRecipientIdResponsibleOrganization = etree.SubElement(Header,"JuridicalRecipientIdResponsibleOrganization")
+    JuridicalRecipientIdResponsibleOrganization = etree.SubElement(Header, t+"JuridicalRecipientIdResponsibleOrganization")
     JuridicalRecipientIdResponsibleOrganization.text = JuridicalRecipientIdResponsibleOrganizationText
 
-    ProcessEnergyContext = etree.SubElement(root, "ProcessEnergyContext")
-    BusinessProcess = etree.SubElement(ProcessEnergyContext,"BusinessProcess")
+    ProcessEnergyContext = etree.SubElement(root, u+"ProcessEnergyContext")
+    BusinessProcess = etree.SubElement(ProcessEnergyContext, t+"BusinessProcess")
     BusinessProcess.text = BusinessProcessText
-    BusinessProcessResponsibleOrganization = etree.SubElement(ProcessEnergyContext,"BusinessProcessResponsibleOrganization")
+    BusinessProcessResponsibleOrganization = etree.SubElement(ProcessEnergyContext, t+"BusinessProcessResponsibleOrganization")
     BusinessProcessResponsibleOrganization.text = BusinessProcessResponsibleOrganizationText
-    SenderBusinessRoleIdentifier = etree.SubElement(ProcessEnergyContext,"SenderBusinessRoleIdentifier")
+    SenderBusinessRoleIdentifier = etree.SubElement(ProcessEnergyContext, t+"SenderBusinessRoleIdentifier")
     SenderBusinessRoleIdentifier.text = SenderBusinessRoleIdentifierText
-    SenderBusinessRoleResponsibleOrganization = etree.SubElement(ProcessEnergyContext,"SenderBusinessRoleResponsibleOrganization")
+    SenderBusinessRoleResponsibleOrganization = etree.SubElement(ProcessEnergyContext, t+"SenderBusinessRoleResponsibleOrganization")
     SenderBusinessRoleResponsibleOrganization.text = SenderBusinessRoleResponsibleOrganizationText
-    IndustryClassificationId = etree.SubElement(ProcessEnergyContext,"IndustryClassificationId")
+    IndustryClassificationId = etree.SubElement(ProcessEnergyContext, t+"IndustryClassificationId")
     IndustryClassificationId.text = IndustryClassificationIdText
-    BusinessProcessMessageType = etree.SubElement(ProcessEnergyContext, "BusinessProcessMessageType")
+    BusinessProcessMessageType = etree.SubElement(ProcessEnergyContext, t+"BusinessProcessMessageType")
     BusinessProcessMessageType.text = BusinessProcessMessageTypeText
 
-    Payload= etree.SubElement(root, "Payload")
+    Payload= etree.SubElement(root, u+"Payload")
 
-    addtopayload(Payload, "12345", "B11", 2000)
+    roczneZuzycie=[["CK1125",2000],["CK1126",500],]
+    addtopayload(Payload, "590111590111590111", "B11", roczneZuzycie)
 
     return root
 
 
 def addtopayload(payload,kodPPE,taryfa,roczneZuzycie):
-    roczneZuzycie/=1000
-    DailyMeteringPointMeasurementsForward = etree.SubElement(payload, "DailyMeteringPointMeasurementsForward")
-    ReferenceTransactionId= etree.SubElement(DailyMeteringPointMeasurementsForward, "ReferenceTransactionId")
+
+    DailyMeteringPointMeasurementsForward = etree.SubElement(payload, u+"DailyMeteringPointMeasurementsForward")
+    ReferenceTransactionId= etree.SubElement(DailyMeteringPointMeasurementsForward, u+"ReferenceTransactionId")
     ReferenceTransactionId.text = ReferenceTransactionIdText
 
-    DataSubject = etree.SubElement(DailyMeteringPointMeasurementsForward, "DataSubject")
-    DataSubjectType = etree.SubElement(DataSubject, "DataSubject")
+    DataSubject = etree.SubElement(DailyMeteringPointMeasurementsForward, u+"DataSubject")
+    DataSubjectType = etree.SubElement(DataSubject, u+"DataSubject")
     DataSubjectType.text = DataSubjectTypeText
-    MeteringPointData_Basic = etree.SubElement(DataSubject, "MeteringPointData_Basic")
-    MeteringPointCode = etree.SubElement(MeteringPointData_Basic, "MeteringPointCode")
+    MeteringPointData_Basic = etree.SubElement(DataSubject, u+"MeteringPointData_Basic")
+    MeteringPointCode = etree.SubElement(MeteringPointData_Basic, u+"MeteringPointCode")
     MeteringPointCode.text = kodPPE
 
-    BasicData = etree.SubElement(DailyMeteringPointMeasurementsForward, "BasicData")
+    BasicData = etree.SubElement(DailyMeteringPointMeasurementsForward, u+"BasicData")
     date = today.date()
-    PeriodStart = etree.SubElement(BasicData, "PeriodStart")
+    PeriodStart = etree.SubElement(BasicData, u+"PeriodStart")
     PeriodStart.text = str(date) + "T00:00:00+02:00"
-    PeriodEnd = etree.SubElement(BasicData, "PeriodEnd")
+    PeriodEnd = etree.SubElement(BasicData, u+"PeriodEnd")
     PeriodEnd.text = str(date) + "T23:59:59+02:00"
-    DataVersionNumber = etree.SubElement(BasicData, "DataVersionNumber")
+    DataVersionNumber = etree.SubElement(BasicData, u+"DataVersionNumber")
     DataVersionNumber.text = DataVersionNumberText
-    EnergyProduct = etree.SubElement(BasicData, "EnergyProduct")
 
-    ProductType = etree.SubElement(EnergyProduct, "ProductType")
-    ProductType.text = "CK1125"
-    ResolutionDuration = etree.SubElement(EnergyProduct, "ResolutionDuration")
-    ResolutionDuration.text = ResolutionDurationText
+    for e in roczneZuzycie:
 
-    # TODO DST +- 1pomiar
-    slownik = getSheets()
-    tabela = slownik[taryfa]
-    pomiary = []
+        EnergyProduct = etree.SubElement(BasicData, u+"EnergyProduct")
 
-    for r in tabela:
-        if date == r[0].date():
-            print("super!")
-            pomiary = r
+        ProductType = etree.SubElement(EnergyProduct, u+"ProductType")
+        ProductType.text = e[0]
+        podstawa = e[1]/1000
+        ResolutionDuration = etree.SubElement(EnergyProduct, u+"ResolutionDuration")
+        ResolutionDuration.text = ResolutionDurationText
 
-    SEQText = 1
-    for i in range(1,len(pomiary)):
-        if pomiary[i] is not None:
-            pomiar= round(pomiary[i]*roczneZuzycie/4, 4)
+        # TODO DST +- 1pomiar
+        slownik = getSheets()
+        tabela = slownik[taryfa]
+        pomiary = []
 
-            for j in range(0,4):
-                EnergyProductMeasurement = etree.SubElement(EnergyProduct, "EnergyProductMeasurement")
-                SEQ = etree.SubElement(EnergyProductMeasurement, "SEQ")
-                SEQ.text = str(SEQText)
-                Volume = etree.SubElement(EnergyProductMeasurement, "Volume")
-                VolumeText = str(pomiar)
-                Volume.text = VolumeText
-                QQ = etree.SubElement(EnergyProductMeasurement, "QQ")
-                QQ.text = "CK0031"
-                SEQText+=1
+        for r in tabela:
+            if date == r[0].date():
+                pomiary = r
 
+        SEQText = 1
+
+
+        for i in range(1,len(pomiary)):
+            if pomiary[i] is not None:
+                if e[0] in napiecia:
+                    pomiar = round(random.uniform(220,240),4)
+                elif e[0] in straty:
+                    pomiar= round(random.random()*0.01,4)
+                else:
+                    pomiar = round(pomiary[i] * podstawa / 4, 4)
+
+                for j in range(0,4):
+                    EnergyProductMeasurement = etree.SubElement(EnergyProduct, u+"EnergyProductMeasurement")
+                    SEQ = etree.SubElement(EnergyProductMeasurement, u+"SEQ")
+                    SEQ.text = str(SEQText)
+                    Volume = etree.SubElement(EnergyProductMeasurement, u+"Volume")
+                    VolumeText = str(pomiar)
+                    Volume.text = VolumeText
+                    QQ = etree.SubElement(EnergyProductMeasurement, u+"QQ")
+                    QQ.text = "CK0031"
+                    SEQText+=1
 
 
 def prettyprint(element, **kwargs):
@@ -158,4 +179,27 @@ def saveToFile(element):
 
 saveToFile(koperta())
 
+
+#funkcja walidujaca wg pliku xsd
+def validate():
+    # Load the XML Schema
+    with open('.\\6_1_1_5.xsd', 'rb') as schema_file:
+        xmlschema_doc = etree.parse(schema_file)
+        xmlschema = etree.XMLSchema(xmlschema_doc)
+
+    # Parse the XML document
+    xml_document = etree.parse('.\\6.1.1.5.xml')
+
+    # Validate the XML document against the schema
+    is_valid = xmlschema.validate(xml_document)
+
+    if is_valid:
+        print("The XML document is valid.")
+    else:
+        print("The XML document is not valid.")
+        # To print the list of validation errors
+        print(xmlschema.error_log)
+
+
+validate()
 
