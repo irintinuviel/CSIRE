@@ -21,6 +21,13 @@ today = now_utc.astimezone(timezone('CET'))
 napiecia= ["CK1141","CK1142","CK1143"]
 straty= ["CK1144","CK1145","CK1146","CK1147"]
 
+podstawy = {
+    "A": 200000000,
+    "B": 20000000,
+    "C": 1000000,
+    "G": 2000
+}
+
 MessageIdText = str(uuid.uuid4())
 MessageTypeText = "6.1_1"
 MessageTypeResponsibleOrganizationText = "x"
@@ -47,8 +54,11 @@ DataVersionNumberText = "1"
 ResolutionDurationText = "CK0098"
 #Koniec stałych
 
+def zuzycieRoczne(klasa):
+    podstawa= podstawy[klasa[0]]
+    return random.uniform(1/5,5)* podstawa
 
-def koperta():
+def koperta(dane):
     root = etree.Element("{urn:pl:oire:unk_6_1_1_5:v1}DailyMeteringPointMeasurementsForwardNotification", nsmap=nsmap)
 
     Header = etree.SubElement(root, u+"Header")
@@ -93,11 +103,20 @@ def koperta():
 
     Payload= etree.SubElement(root, u+"Payload")
 
-    roczneZuzycie=[["CK1125",2000],["CK1126",500],]
-    addtopayload(Payload, "590111590111590111", "B11", roczneZuzycie)
+    for e in dane:
+        roczneZuzycie = []
+
+        for c in e[3]:
+            # TODO nie dla wszystkich produktów potrzebne
+            zuzycie = zuzycieRoczne(e[2])
+            roczneZuzycie.append([c,zuzycie])
+
+        addtopayload(Payload, e[0], e[1], roczneZuzycie)
 
     return root
 
+#az do konca pliku
+#kiedy jest juz 1000, kod ppe+sformatowana napisowo rrr-mm-dd.xml
 
 def addtopayload(payload,kodPPE,taryfa,roczneZuzycie):
 
@@ -122,7 +141,7 @@ def addtopayload(payload,kodPPE,taryfa,roczneZuzycie):
     DataVersionNumber.text = DataVersionNumberText
 
     for e in roczneZuzycie:
-
+        print(e[0])
         EnergyProduct = etree.SubElement(BasicData, u+"EnergyProduct")
 
         ProductType = etree.SubElement(EnergyProduct, u+"ProductType")
@@ -168,27 +187,23 @@ def prettyprint(element, **kwargs):
     xml = etree.tostring(element, pretty_print=True, **kwargs)
     print(xml.decode(), end='')
 
-#wynik do pliku 6.1.1.5 timestamp.xml
-
-def saveToFile(element):
-    filename = "6.1.1.5.xml"
+def saveToFile(element,num):
+    filename = "6.1.1.5"+str(datetime.now().strftime("_%y-%m-%d_"))+str(num)+".xml"
     f = open(filename, "w")
     xml = etree.tostring(element).decode('UTF-8')
     f.write(xml)
     f.close()
 
-saveToFile(koperta())
-
 
 #funkcja walidujaca wg pliku xsd
-def validate():
+def validate(filename):
     # Load the XML Schema
     with open('.\\6_1_1_5.xsd', 'rb') as schema_file:
         xmlschema_doc = etree.parse(schema_file)
         xmlschema = etree.XMLSchema(xmlschema_doc)
 
     # Parse the XML document
-    xml_document = etree.parse('.\\6.1.1.5.xml')
+    xml_document = etree.parse(filename)
 
     # Validate the XML document against the schema
     is_valid = xmlschema.validate(xml_document)
@@ -201,5 +216,33 @@ def validate():
         print(xmlschema.error_log)
 
 
-validate()
+def readFile(filename):
+    data= []
+    with open(filename, mode='r') as file:
+        for line in file.readlines():
+            line = line.strip().split(",")
+            line[3] = line[3].split(":")
+            data.append(line)
+    return data
+
+
+def addtokoperta():
+    alldata= readFile("sampleppe.csv")
+    data=[]
+    k= 0
+    count = 0
+    for l in alldata:
+
+        data.append(l)
+        count+=1
+        #TODO ZMIEN TA 1000
+        if count > 10:
+            k+=1
+            saveToFile(koperta(data),k)
+            count= 0
+            data= []
+    k+=1
+    saveToFile(koperta(data),k)
+
+addtokoperta()
 
