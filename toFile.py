@@ -28,6 +28,7 @@ podstawy = {
     "G": 2000
 }
 
+
 MessageIdText = str(uuid.uuid4())
 MessageTypeText = "6.1_1"
 MessageTypeResponsibleOrganizationText = "x"
@@ -58,7 +59,7 @@ def zuzycieRoczne(klasa):
     podstawa= podstawy[klasa[0]]
     return random.uniform(1/5,5)* podstawa
 
-def koperta(dane):
+def koperta(dane, slownik):
     root = etree.Element("{urn:pl:oire:unk_6_1_1_5:v1}DailyMeteringPointMeasurementsForwardNotification", nsmap=nsmap)
 
     Header = etree.SubElement(root, u+"Header")
@@ -103,22 +104,23 @@ def koperta(dane):
 
     Payload= etree.SubElement(root, u+"Payload")
 
+
     for e in dane:
         roczneZuzycie = []
+        taryfa = e[1]
+        tabela = slownik[taryfa]
 
         for c in e[3]:
             # TODO nie dla wszystkich produktów potrzebne
             zuzycie = zuzycieRoczne(e[2])
             roczneZuzycie.append([c,zuzycie])
 
-        addtopayload(Payload, e[0], e[1], roczneZuzycie)
+        addtopayload(Payload, e[0], tabela, roczneZuzycie)
 
     return root
 
-#az do konca pliku
-#kiedy jest juz 1000, kod ppe+sformatowana napisowo rrr-mm-dd.xml
 
-def addtopayload(payload,kodPPE,taryfa,roczneZuzycie):
+def addtopayload(payload,kodPPE,pomiary,roczneZuzycie):
 
     DailyMeteringPointMeasurementsForward = etree.SubElement(payload, u+"DailyMeteringPointMeasurementsForward")
     ReferenceTransactionId= etree.SubElement(DailyMeteringPointMeasurementsForward, u+"ReferenceTransactionId")
@@ -141,7 +143,6 @@ def addtopayload(payload,kodPPE,taryfa,roczneZuzycie):
     DataVersionNumber.text = DataVersionNumberText
 
     for e in roczneZuzycie:
-        print(e[0])
         EnergyProduct = etree.SubElement(BasicData, u+"EnergyProduct")
 
         ProductType = etree.SubElement(EnergyProduct, u+"ProductType")
@@ -151,16 +152,8 @@ def addtopayload(payload,kodPPE,taryfa,roczneZuzycie):
         ResolutionDuration.text = ResolutionDurationText
 
         # TODO DST +- 1pomiar
-        slownik = getSheets()
-        tabela = slownik[taryfa]
-        pomiary = []
-
-        for r in tabela:
-            if date == r[0].date():
-                pomiary = r
 
         SEQText = 1
-
 
         for i in range(1,len(pomiary)):
             if pomiary[i] is not None:
@@ -225,9 +218,18 @@ def readFile(filename):
             data.append(line)
     return data
 
+def szukajDlaDoby(slownik,doba):
+    slowniknew= {}
+    for k in slownik.keys():
+        for e in slownik[k]:
+            if e[0].date() == doba:
+                slowniknew[k] = e[1:]
+    return slowniknew
 
-def addtokoperta():
-    alldata= readFile("sampleppe.csv")
+def generujProfile(doba):
+    alldata= readFile("generatedPPE.csv")
+    slownik = getSheets()
+    slownik = szukajDlaDoby(slownik,doba)
     data=[]
     k= 0
     count = 0
@@ -235,14 +237,14 @@ def addtokoperta():
 
         data.append(l)
         count+=1
-        #TODO ZMIEN TA 1000
-        if count > 10:
+
+        if count > 1000:
             k+=1
-            saveToFile(koperta(data),k)
+            saveToFile(koperta(data,slownik),k)
             count= 0
             data= []
     k+=1
-    saveToFile(koperta(data),k)
+    saveToFile(koperta(data,slownik),k)
 
-addtokoperta()
+generujProfile(datetime.now().date())
 
