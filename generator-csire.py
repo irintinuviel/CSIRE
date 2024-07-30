@@ -1,11 +1,16 @@
+import argparse
 import datetime
 import random
+import threading
 
 from lxml import etree
 from datetime import datetime
 from pytz import timezone
 import uuid
+
+from generatorPPE import generateData
 from readExcel import getSheets
+import concurrent.futures
 
 #Początek stałych
 nsmap = {
@@ -147,7 +152,7 @@ def addtopayload(payload,kodPPE,pomiary,roczneZuzycie):
 
         ProductType = etree.SubElement(EnergyProduct, u+"ProductType")
         ProductType.text = e[0]
-        podstawa = e[1]/1000
+        podstawa = e[1] * 0.001
         ResolutionDuration = etree.SubElement(EnergyProduct, u+"ResolutionDuration")
         ResolutionDuration.text = ResolutionDurationText
 
@@ -162,7 +167,7 @@ def addtopayload(payload,kodPPE,pomiary,roczneZuzycie):
                 elif e[0] in straty:
                     pomiar= round(random.random()*0.01,4)
                 else:
-                    pomiar = round(pomiary[i] * podstawa / 4, 4)
+                    pomiar = round(pomiary[i] * podstawa * 0.25, 4)
 
                 for j in range(0,4):
                     EnergyProductMeasurement = etree.SubElement(EnergyProduct, u+"EnergyProductMeasurement")
@@ -180,8 +185,8 @@ def prettyprint(element, **kwargs):
     xml = etree.tostring(element, pretty_print=True, **kwargs)
     print(xml.decode(), end='')
 
-def saveToFile(element,num):
-    filename = "6.1.1.5"+str(datetime.now().strftime("_%y-%m-%d_"))+str(num)+".xml"
+def saveToFile(element,num,katalog,doba):
+    filename = katalog+"/6.1.1.5"+str(doba.strftime("_%y-%m-%d_"))+str(num)+".xml"
     f = open(filename, "w")
     xml = etree.tostring(element).decode('UTF-8')
     f.write(xml)
@@ -195,17 +200,13 @@ def validate(filename):
         xmlschema_doc = etree.parse(schema_file)
         xmlschema = etree.XMLSchema(xmlschema_doc)
 
-    # Parse the XML document
     xml_document = etree.parse(filename)
-
-    # Validate the XML document against the schema
     is_valid = xmlschema.validate(xml_document)
 
     if is_valid:
         print("The XML document is valid.")
     else:
         print("The XML document is not valid.")
-        # To print the list of validation errors
         print(xmlschema.error_log)
 
 
@@ -226,25 +227,115 @@ def szukajDlaDoby(slownik,doba):
                 slowniknew[k] = e[1:]
     return slowniknew
 
-def generujProfile(doba):
-    alldata= readFile("generatedPPE.csv")
-    slownik = getSheets()
+def generujProfile(ppe,profil,katalog,doba,paczka):
+    doba = datetime.strptime(doba, "%Y%m%d").date()
+    alldata= readFile(ppe)
+    slownik = getSheets(profil)
     slownik = szukajDlaDoby(slownik,doba)
     data=[]
     k= 0
     count = 0
-    for l in alldata:
+    threadnum= 6
 
+    threads=[]
+    for l in alldata:
         data.append(l)
         count+=1
 
-        if count > 1000:
+        if count >= paczka:
             k+=1
-            saveToFile(koperta(data,slownik),k)
+            thread = threading.Thread(target=saveToFile,args=(koperta(data,slownik),k,katalog,doba))
+            threads.append(thread)
+            thread.start()
             count= 0
             data= []
-    k+=1
-    saveToFile(koperta(data,slownik),k)
 
-generujProfile(datetime.now().date())
+        while len(threads) >= threadnum:
+            for t in threads:
+                if not t.is_alive():
+                    threads.remove(t)
+
+    if data:
+        k+=1
+        thread = threading.Thread(target=saveToFile, args=(koperta(data, slownik), k,katalog,doba))
+        threads.append(thread)
+        thread.start()
+
+    for t in threads:
+        t.join()
+
+
+parser = argparse.ArgumentParser(description='Generuj')
+subparsers = parser.add_subparsers(dest='subcommand')
+subparsers.required = True
+
+parser_ppe = subparsers.add_parser('generuj-ppe')
+
+parser_ppe.add_argument(
+    '-i',
+    required=True,
+    dest='plik_konfiguracyjny',
+    help='Nazwa pliku konfiguracyjnego'
+)
+parser_ppe.add_argument(
+    '-s',
+    default='profil_standardowy.xls', #POTRZEBNE
+    required=False,
+    dest='plik_profil',
+    help='Nazwa pliku z profilem standardowym'
+)
+parser_ppe.add_argument(
+    '-o',
+    required=True,
+    dest= 'plik_wynikowy',
+    help='Nazwa pliku wynikowego'
+)
+
+parser_6_1_1_5 = subparsers.add_parser('generuj-6.1.1.5')
+
+parser_6_1_1_5.add_argument(
+    '-i',
+    default='ppe.txt', #nie csv?
+    required= False,
+    dest='plik_ppe',
+    help='Nazwa pliku z ppe, domyślnie ppe.txt'
+)
+parser_6_1_1_5.add_argument(
+    '-s',
+    default='profil_standardowy.xlsx', #XLSX, openpxl does not support old xls format
+    required=False,
+    dest='plik_profil',
+    help='Nazwa pliku z profilem standardowym, domyślnie profil_standardowy.xls'
+)
+parser_6_1_1_5.add_argument(
+    '-o',
+    required=True,
+    dest='katalog_wynikowy',
+    help='Sciezka do katalogu wynikowego'
+)
+parser_6_1_1_5.add_argument(
+    '-d',
+    required=True,
+    dest='doba',
+    help='Doba w formacie RRRRMMDD'
+)
+parser_6_1_1_5.add_argument(
+    '-p',
+    required=False,
+    default=1000,
+    dest='paczka',
+    help='Wielkosc paczki, domyslnie 1000'
+)
+
+args = parser.parse_args()
+
+if args.subcommand == 'generuj-ppe':
+    print('I will now generate from %s to %s' % (args.plik_konfiguracyjny, args.plik_wynikowy))
+    generateData(args.plik_konfiguracyjny,args.plik_profil,args.plik_wynikowy)
+
+if args.subcommand == 'generuj-6.1.1.5':
+    print('ppe: %s profil standardowy: %s katalog: %s doba: %s paczka: %s' % (args.plik_ppe, args.plik_profil,args.katalog_wynikowy,args.doba,args.paczka))
+    generujProfile(args.plik_ppe, args.plik_profil,args.katalog_wynikowy,args.doba,args.paczka)
+#generujProfile("generatedPPE.csv", "Klasy-PP.xlsx","wynik", datetime.now().date().strftime("%Y%m%d"), 1000)
+
 

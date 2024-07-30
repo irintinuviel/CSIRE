@@ -2,14 +2,10 @@
 #tyle ile liczebnosc wygenerowac punktow, taryfa losowo wybrana, tabela 4elementowa: klasa profil liczebnosc, tablica produktow energetycznych
 import math
 import random
-import time
 import openpyxl
-import csv
 from readExcel import getSheets
 
-file = ".\\Klasy-PP.xlsx"
-
-def czytaj_arkusz(plik):
+def czytaj_plik(plik):
     wb = openpyxl.load_workbook(plik, data_only=True)
     sheet = wb.active
     data = []
@@ -30,16 +26,15 @@ def czytaj_arkusz(plik):
 
     return finaldata
 
-def generateData():
-    filename = "generatedPPE.csv"
-    data = czytaj_arkusz(file)
-    sheets = getSheets()
+def generateData(infile,profil,outfile):
+    data = czytaj_plik(infile)
+    sheets = getSheets(profil)
     count = 0
     for row in data:
         n = row[0]
         taryfy = []
         last = 1234567890
-        #do pliku
+
         for k in sheets.keys():
             if k.startswith(row[2]):
                 taryfy.append(k)
@@ -52,7 +47,7 @@ def generateData():
             for e in row[3]:
                 products += e+":"
             products= products.rstrip(":")
-            with open(filename, 'a',newline="\n") as csvfile:
+            with open(outfile, 'a',newline="\n") as csvfile:
                 s= gs1[1]+ "," +taryfy[rand]+ "," +row[1]+ "," +products+"\n"
                 csvfile.write(s)
             count+= 1
@@ -83,9 +78,7 @@ def generateGS1(last):
     return number,kod
 
 
-start_time = time.time()
-generateData()
-print("--- %s seconds ---" % (time.time() - start_time))
+
 
 
 

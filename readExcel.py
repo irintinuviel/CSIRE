@@ -1,7 +1,5 @@
 import openpyxl
 
-file = ".\\Załącznik_4_IRiESD_profile_2024.xlsx"
-
 def czytaj_arkusz(plik, arkusz):
     wb = openpyxl.load_workbook(plik, data_only=True)
     sheet = wb.get_sheet_by_name(arkusz)
@@ -10,14 +8,7 @@ def czytaj_arkusz(plik, arkusz):
         data.append([cell.value for cell in row])
     return data
 
-##################################################################
-def pretty_print(data):
-    for row in data:
-        print(row)
-
-#pretty_print(czytaj_arkusz(file,"B11, B11em i B12"))
-
-def getSheets():
+def getSheets(file):
     sheets = {}
     profilB = czytaj_arkusz(file, "B11, B11em i B12")
     sheets["B11"] = profilB
@@ -35,5 +26,3 @@ def getSheets():
     sheets["G12w"] = czytaj_arkusz(file,"G12w")
     sheets["G12as"] = czytaj_arkusz(file,"G12as")
     return sheets
-
-#po tablicy, z jednej godziny 4, z drugiej po 4 itd, szukanie po dniach
