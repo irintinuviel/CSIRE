@@ -1,25 +1,25 @@
 import argparse
 import datetime
 import random
+import sys
 import threading
-
 from lxml import etree
 from datetime import datetime
 from pytz import timezone
 import uuid
 
-from generatorPPE import generateData
-from readExcel import getSheets
-import concurrent.futures
+from generatorPPE import generatePPE
+from readExcel import czytajProfileStandardowe
+
 
 #Początek stałych
 nsmap = {
-    "u": "urn:pl:oire:unk_6_1_1_5:v1",
+    "u1": "urn:pl:oire:unk_6_1_1_1:v1",
+    "u5": "urn:pl:oire:unk_6_1_1_5:v1",
     "t": "urn:pl:oire:technical:v1"
 }
 t = "{{{0}}}".format(nsmap["t"])
-u = "{{{0}}}".format(nsmap["u"])
-
+u = "{{{0}}}".format(nsmap["u5"])
 now_utc = datetime.now(timezone('UTC'))
 today = now_utc.astimezone(timezone('CET'))
 
@@ -32,7 +32,6 @@ podstawy = {
     "C": 1000000,
     "G": 2000
 }
-
 
 MessageIdText = str(uuid.uuid4())
 MessageTypeText = "6.1_1"
@@ -52,7 +51,7 @@ BusinessProcessResponsibleOrganizationText = "x"
 SenderBusinessRoleIdentifierText = "CK0086"
 SenderBusinessRoleResponsibleOrganizationText = "260"
 IndustryClassificationIdText = "23"
-BusinessProcessMessageTypeText = "6.1.1.5."
+
 
 ReferenceTransactionIdText = str(uuid.uuid4())
 DataSubjectTypeText = "CK0150"
@@ -64,8 +63,15 @@ def zuzycieRoczne(klasa):
     podstawa= podstawy[klasa[0]]
     return random.uniform(1/5,5)* podstawa
 
-def koperta(dane, slownik):
-    root = etree.Element("{urn:pl:oire:unk_6_1_1_5:v1}DailyMeteringPointMeasurementsForwardNotification", nsmap=nsmap)
+def koperta(dane, slownik,typ):
+
+    if typ == "6.1.1.1":
+        root = etree.Element("{urn:pl:oire:unk_6_1_1_1:v1}DailyMeteringPointMeasurementsNotification", nsmap=nsmap)
+        BusinessProcessMessageTypeText = "6.1.1.1."
+        u = "{{{0}}}".format(nsmap["u1"])
+    else:
+        root = etree.Element("{urn:pl:oire:unk_6_1_1_5:v1}DailyMeteringPointMeasurementsForwardNotification", nsmap=nsmap)
+        BusinessProcessMessageTypeText = "6.1.1.5."
 
     Header = etree.SubElement(root, u+"Header")
     MessageId = etree.SubElement(Header, t+"MessageId")
@@ -120,17 +126,20 @@ def koperta(dane, slownik):
             zuzycie = zuzycieRoczne(e[2])
             roczneZuzycie.append([c,zuzycie])
 
-        addtopayload(Payload, e[0], tabela, roczneZuzycie)
+        addtopayload(Payload, e[0], tabela, roczneZuzycie,typ,u)
 
     return root
 
 
-def addtopayload(payload,kodPPE,pomiary,roczneZuzycie):
+def addtopayload(payload,kodPPE,pomiary,roczneZuzycie,typ,u):
 
-    DailyMeteringPointMeasurementsForward = etree.SubElement(payload, u+"DailyMeteringPointMeasurementsForward")
+    if typ == "6.1.1.1":
+        DailyMeteringPointMeasurementsForward = etree.SubElement(payload, u+"DailyMeteringPointMeasurements")
+    else:
+        DailyMeteringPointMeasurementsForward = etree.SubElement(payload, u + "DailyMeteringPointMeasurementsForward")
+
     ReferenceTransactionId= etree.SubElement(DailyMeteringPointMeasurementsForward, u+"ReferenceTransactionId")
     ReferenceTransactionId.text = ReferenceTransactionIdText
-
     DataSubject = etree.SubElement(DailyMeteringPointMeasurementsForward, u+"DataSubject")
     DataSubjectType = etree.SubElement(DataSubject, u+"DataSubject")
     DataSubjectType.text = DataSubjectTypeText
@@ -185,8 +194,11 @@ def prettyprint(element, **kwargs):
     xml = etree.tostring(element, pretty_print=True, **kwargs)
     print(xml.decode(), end='')
 
-def saveToFile(element,num,katalog,doba):
-    filename = katalog+"/6.1.1.5"+str(doba.strftime("_%y-%m-%d_"))+str(num)+".xml"
+def saveToFile(element,num,katalog,doba,typ):
+    if typ == "6.1.1.1":
+        filename = katalog + "/6.1.1.1" + str(doba.strftime("_%y-%m-%d_")) + str(num) + ".xml"
+    else:
+        filename = katalog+"/6.1.1.5"+str(doba.strftime("_%y-%m-%d_"))+str(num)+".xml"
     f = open(filename, "w")
     xml = etree.tostring(element).decode('UTF-8')
     f.write(xml)
@@ -194,9 +206,13 @@ def saveToFile(element,num,katalog,doba):
 
 
 #funkcja walidujaca wg pliku xsd
-def validate(filename):
+def validate(filename, typ):
+    if typ == "6.1.1.1":
+        schemaname = '6_1_1_1.xsd'
+    else:
+        schemaname= '6_1_1_5.xsd'
     # Load the XML Schema
-    with open('.\\6_1_1_5.xsd', 'rb') as schema_file:
+    with open(schemaname, 'rb') as schema_file:
         xmlschema_doc = etree.parse(schema_file)
         xmlschema = etree.XMLSchema(xmlschema_doc)
 
@@ -227,10 +243,10 @@ def szukajDlaDoby(slownik,doba):
                 slowniknew[k] = e[1:]
     return slowniknew
 
-def generujProfile(ppe,profil,katalog,doba,paczka):
+def generujProfile(ppe,profil,katalog,doba,paczka,typ):
     doba = datetime.strptime(doba, "%Y%m%d").date()
     alldata= readFile(ppe)
-    slownik = getSheets(profil)
+    slownik = czytajProfileStandardowe(profil)
     slownik = szukajDlaDoby(slownik,doba)
     data=[]
     k= 0
@@ -244,7 +260,7 @@ def generujProfile(ppe,profil,katalog,doba,paczka):
 
         if count >= paczka:
             k+=1
-            thread = threading.Thread(target=saveToFile,args=(koperta(data,slownik),k,katalog,doba))
+            thread = threading.Thread(target=saveToFile,args=(koperta(data,slownik,typ),k,katalog,doba,typ))
             threads.append(thread)
             thread.start()
             count= 0
@@ -257,7 +273,7 @@ def generujProfile(ppe,profil,katalog,doba,paczka):
 
     if data:
         k+=1
-        thread = threading.Thread(target=saveToFile, args=(koperta(data, slownik), k,katalog,doba))
+        thread = threading.Thread(target=saveToFile, args=(koperta(data, slownik,typ), k,katalog,doba,typ))
         threads.append(thread)
         thread.start()
 
@@ -265,7 +281,13 @@ def generujProfile(ppe,profil,katalog,doba,paczka):
         t.join()
 
 
-parser = argparse.ArgumentParser(description='Generuj')
+class MyParser(argparse.ArgumentParser):
+    def error(self, message):
+        sys.stderr.write('error: %s\n' % message)
+        self.print_help()
+        sys.exit(2)
+
+parser = MyParser()
 subparsers = parser.add_subparsers(dest='subcommand')
 subparsers.required = True
 
@@ -274,15 +296,15 @@ parser_ppe = subparsers.add_parser('generuj-ppe')
 parser_ppe.add_argument(
     '-i',
     required=True,
-    dest='plik_konfiguracyjny',
+    dest='plik_konfig',
     help='Nazwa pliku konfiguracyjnego'
 )
 parser_ppe.add_argument(
     '-s',
-    default='profil_standardowy.xls', #POTRZEBNE
+    default='profil_standardowy.xls',
     required=False,
     dest='plik_profil',
-    help='Nazwa pliku z profilem standardowym'
+    help='Nazwa pliku z profilem standardowym, domyslnie profil_standardowy.xls'
 )
 parser_ppe.add_argument(
     '-o',
@@ -295,17 +317,53 @@ parser_6_1_1_5 = subparsers.add_parser('generuj-6.1.1.5')
 
 parser_6_1_1_5.add_argument(
     '-i',
-    default='ppe.txt', #nie csv?
+    default='ppe.csv',
     required= False,
     dest='plik_ppe',
-    help='Nazwa pliku z ppe, domyślnie ppe.txt'
+    help='Nazwa pliku z ppe, domyslnie ppe.csv'
 )
 parser_6_1_1_5.add_argument(
     '-s',
-    default='profil_standardowy.xlsx', #XLSX, openpxl does not support old xls format
+    default='profil_standardowy.xlsx',
     required=False,
     dest='plik_profil',
-    help='Nazwa pliku z profilem standardowym, domyślnie profil_standardowy.xls'
+    help='Nazwa pliku z profilem standardowym, domyslnie profil_standardowy.xls'
+)
+parser_6_1_1_5.add_argument(
+    '-o',
+    required=True,
+    dest='katalog_wynikowy',
+    help='Sciezka do katalogu wynikowego'
+)
+parser_6_1_1_5.add_argument(
+    '-d',
+    required=True,
+    dest='doba',
+    help='Doba w formacie RRRRMMDD'
+)
+parser_6_1_1_5.add_argument(
+    '-p',
+    required=False,
+    default=1000,
+    dest='paczka',
+    help='Wielkosc paczki, domyslnie 1000'
+)
+
+parser_6_1_1_5 = subparsers.add_parser('generuj-6.1.1.1')
+
+parser_6_1_1_5.add_argument(
+    '-i',
+    default='ppe.csv',
+    required= False,
+    dest='plik_ppe',
+    help='Nazwa pliku z ppe, domyslnie ppe.csv'
+)
+parser_6_1_1_5.add_argument(
+    '-s',
+    default='profil_standardowy.xlsx',
+    required=False,
+    dest='plik_profil',
+    help='Nazwa pliku z profilem standardowym, domyslnie profil_standardowy.xls'
 )
 parser_6_1_1_5.add_argument(
     '-o',
@@ -330,12 +388,15 @@ parser_6_1_1_5.add_argument(
 args = parser.parse_args()
 
 if args.subcommand == 'generuj-ppe':
-    print('I will now generate from %s to %s' % (args.plik_konfiguracyjny, args.plik_wynikowy))
-    generateData(args.plik_konfiguracyjny,args.plik_profil,args.plik_wynikowy)
+    print('plik konfiguracyjny: %s plik wynikowy: %s profil standardowy: %s' % (args.plik_konfig, args.plik_wynikowy, args.plik_profil))
+    generatePPE(args.plik_konfig, args.plik_profil, args.plik_wynikowy)
 
 if args.subcommand == 'generuj-6.1.1.5':
     print('ppe: %s profil standardowy: %s katalog: %s doba: %s paczka: %s' % (args.plik_ppe, args.plik_profil,args.katalog_wynikowy,args.doba,args.paczka))
-    generujProfile(args.plik_ppe, args.plik_profil,args.katalog_wynikowy,args.doba,args.paczka)
-#generujProfile("generatedPPE.csv", "Klasy-PP.xlsx","wynik", datetime.now().date().strftime("%Y%m%d"), 1000)
+    generujProfile(args.plik_ppe, args.plik_profil,args.katalog_wynikowy,args.doba,args.paczka,"6.1.1.5")
+if args.subcommand == 'generuj-6.1.1.1':
+    print('ppe: %s profil standardowy: %s katalog: %s doba: %s paczka: %s' % (args.plik_ppe, args.plik_profil,args.katalog_wynikowy,args.doba,args.paczka))
+    generujProfile(args.plik_ppe, args.plik_profil,args.katalog_wynikowy,args.doba,args.paczka,"6.1.1.1")
+
 
 

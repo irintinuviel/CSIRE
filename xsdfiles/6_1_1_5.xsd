@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:bdt="urn:pl:oire:businessDataTypes:v1" xmlns:tech="urn:pl:oire:technical:v1" xmlns:unk_6_1_1_5="urn:pl:oire:unk_6_1_1_5:v1" elementFormDefault="qualified" targetNamespace="urn:pl:oire:unk_6_1_1_5:v1">
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Wersja przedprodukcyjna z 21.06.2024                                                                                                         ==== -->
+    <!-- ====================================================================================================================================================== -->
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Import                                                                                                                                       ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:import namespace="urn:pl:oire:businessDataTypes:v1" schemaLocation="../businessDataTypes.xsd"/>
+    <xs:import namespace="urn:pl:oire:technical:v1" schemaLocation="../technical.xsd"/>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== 6.1.1.5. Przekazanie dobowego profilu zużycia w ramach usługi przekierowania                                                                 ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="DailyMeteringPointMeasurementsForwardNotification" type="unk_6_1_1_5:DailyMeteringPointMeasurementsForwardNotification"/>
+    <xs:complexType name="DailyMeteringPointMeasurementsForwardNotification">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_1_1_5:plName>6.1.1.5. Przekazanie dobowego profilu zużycia w ramach usługi przekierowania</unk_6_1_1_5:plName>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Nagłówek -->
+            <xs:element name="Header" type="tech:Header" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Nagłówek</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-700</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Kontekst -->
+            <xs:element name="ProcessEnergyContext" type="tech:ProcessEnergyContext" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Kontekst</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-715</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- 6.1.1.5. Payload Przekazanie dobowego profilu zużycia w ramach usługi przekierowania -->
+            <xs:element name="Payload" type="unk_6_1_1_5:DailyMeteringPointMeasurementsForwardNotificationPayload" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>6.1.1.5. Payload Przekazanie dobowego profilu zużycia w ramach usługi przekierowania</unk_6_1_1_5:plName>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== 6.1.1.5. Payload Przekazanie dobowego profilu zużycia w ramach usługi przekierowania                                                         ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="DailyMeteringPointMeasurementsForwardNotificationPayload" type="unk_6_1_1_5:DailyMeteringPointMeasurementsForwardNotificationPayload"/>
+    <xs:complexType name="DailyMeteringPointMeasurementsForwardNotificationPayload">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_1_1_5:plName>6.1.1.5. Payload Przekazanie dobowego profilu zużycia w ramach usługi przekierowania</unk_6_1_1_5:plName>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Rekord operacji masowej -->
+            <xs:element name="DailyMeteringPointMeasurementsForward" type="unk_6_1_1_5:DailyMeteringPointMeasurementsForward" minOccurs="1" maxOccurs="1000">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Rekord operacji masowej</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-711</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Rekord operacji masowej                                                                                                                      ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="DailyMeteringPointMeasurementsForward" type="unk_6_1_1_5:DailyMeteringPointMeasurementsForward"/>
+    <xs:complexType name="DailyMeteringPointMeasurementsForward">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_1_1_5:plName>Rekord operacji masowej</unk_6_1_1_5:plName>
+                <unk_6_1_1_5:code>PL-711</unk_6_1_1_5:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Identyfikator transakcji -->
+            <xs:element name="ReferenceTransactionId" type="bdt:UuidType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Identyfikator transakcji</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-710</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Identyfikator rekordu nadawany przez Operatora, używany do korelacji rekordu żądania do rekordu wyniku</xs:documentation>
+                    <xs:documentation xml:lang="en">Identifier assigned by Operator, used for batch record identification</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Przedmiot danych -->
+            <xs:element name="DataSubject" type="unk_6_1_1_5:DataSubject" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Przedmiot danych</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-160</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.1.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Informacje podstawowe -->
+            <xs:element name="BasicData" type="unk_6_1_1_5:BasicData" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Informacje podstawowe</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-325</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.2.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Przedmiot danych                                                                                                                             ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="DataSubject" type="unk_6_1_1_5:DataSubject"/>
+    <xs:complexType name="DataSubject">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_1_1_5:plName>Przedmiot danych</unk_6_1_1_5:plName>
+                <unk_6_1_1_5:code>PL-160</unk_6_1_1_5:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.1.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Przedmiot danych -->
+            <xs:element name="DataSubject" type="bdt:DataSubjectType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Przedmiot danych</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-161</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Określa, czy przekazywane lub udostępniane dane pomiarowe dotyczą Punktu pomiarowego, czy obiektu pomiarowego.</xs:documentation>
+                    <xs:documentation xml:lang="en">Determines whether the transferred or shared metering data pertains to a Metering Point or a Metering Facility.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Dane PP - ogólne -->
+            <xs:element name="MeteringPointData_Basic" type="unk_6_1_1_5:MeteringPointData_Basic" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Dane PP - ogólne</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-300</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.1.1.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Dane obiektu - ogólne -->
+            <xs:element name="FacilityData_Basic" type="unk_6_1_1_5:FacilityData_Basic" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Dane obiektu - ogólne</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-425</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.1.2.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Dane PP - ogólne                                                                                                                             ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="MeteringPointData_Basic" type="unk_6_1_1_5:MeteringPointData_Basic"/>
+    <xs:complexType name="MeteringPointData_Basic">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_1_1_5:plName>Dane PP - ogólne</unk_6_1_1_5:plName>
+                <unk_6_1_1_5:code>PL-300</unk_6_1_1_5:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.1.1.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Kod PP -->
+            <xs:element name="MeteringPointCode" type="bdt:MeteringPointCodeType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Kod PP</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-001</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Kod identyfikujący Punkt pomiarowy - zgodny ze standardem GS1.</xs:documentation>
+                    <xs:documentation xml:lang="en">Metering Point Identification Code - compliant with the GS1 standard.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Dane obiektu - ogólne                                                                                                                        ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="FacilityData_Basic" type="unk_6_1_1_5:FacilityData_Basic"/>
+    <xs:complexType name="FacilityData_Basic">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_1_1_5:plName>Dane obiektu - ogólne</unk_6_1_1_5:plName>
+                <unk_6_1_1_5:code>PL-425</unk_6_1_1_5:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.1.2.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Identyfikator obiektu -->
+            <xs:element name="FacilityIdentifier" type="bdt:FacilityIdentifierType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Identyfikator obiektu</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-424</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Unikalny kod identyfikujący obiekt pomiarowy. Struktura Identyfikatora obiektu składa się z:
+1) kodu EIC (np. 19X000000000001C),
+2) oznaczenia przedmiotu identyfikacji (OP - obiektu pomiarowego),
+3) unikalnego dopełnienia nadawanego przez Operatora (np. 11111111).</xs:documentation>
+                    <xs:documentation xml:lang="en">Unique code identifying the metering facility. The structure of the facility Identifier consists of:
+1) EIC code (e.g. 19X000000000001C),
+2) designation of the facility of identification (OP - measurement facility),
+3) a unique complement assigned by the Operator (e.g. 11111111).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Informacje podstawowe                                                                                                                        ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="BasicData" type="unk_6_1_1_5:BasicData"/>
+    <xs:complexType name="BasicData">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_1_1_5:plName>Informacje podstawowe</unk_6_1_1_5:plName>
+                <unk_6_1_1_5:code>PL-325</unk_6_1_1_5:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.2.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Czas początku okresu -->
+            <xs:element name="PeriodStart" type="xs:dateTime" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Czas początku okresu</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-179</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Czas początku pierwszego wysyłanego interwału danych zużycia energii elektrycznej</xs:documentation>
+                    <xs:documentation xml:lang="en">Time of beginning of the first sent interval of electricity consumption data</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Czas końca okresu -->
+            <xs:element name="PeriodEnd" type="xs:dateTime" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Czas końca okresu</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-180</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Czas końca ostatniego wysyłanego interwału danych zużycia energii elektrycznej</xs:documentation>
+                    <xs:documentation xml:lang="en">Time of end of the last sent interval of electricity consumption data</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Numer wersji danych -->
+            <xs:element name="DataVersionNumber" type="bdt:PositiveInteger2_Type" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Numer wersji danych</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-199</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Oznaczenie kolejnych wersji przekazywanych danych. Wersja oznaczona nr."1" - pierwsze przekazanie danych pomiarowych, kolejne liczby naturalne - kolejne wersje/korekty.</xs:documentation>
+                    <xs:documentation xml:lang="en">Designation of successive versions of the transmitted data. Version marked no."1" - the first transmission of measurement data, subsequent natural numbers - subsequent versions/corrections.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Produkt energetyczny -->
+            <xs:element name="EnergyProduct" type="unk_6_1_1_5:EnergyProduct" minOccurs="1" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Produkt energetyczny</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-346</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.2.1.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Produkt energetyczny                                                                                                                         ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="EnergyProduct" type="unk_6_1_1_5:EnergyProduct"/>
+    <xs:complexType name="EnergyProduct">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_1_1_5:plName>Produkt energetyczny</unk_6_1_1_5:plName>
+                <unk_6_1_1_5:code>PL-346</unk_6_1_1_5:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.2.1.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Typ produktu energetycznego -->
+            <xs:element name="ProductType" type="bdt:ProductType_Type" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Typ produktu energetycznego</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-247</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Określenie właściwego produktu energetycznego, zgodnie z listą. 
+W zakresie wskazania profilów pomiarowych, oznacza przekazanie danych profilowych bez uwzględnienia doliczeń/odliczeń, w odróżnieniu do wskazania profilów rozliczeniowego, który uwzględnia w prezentowanych wartościach straty energii elektrycznej lub doliczenia oraz odliczenia, zgodnie z parametrami umowy między Operatorem a Użytkownikiem KSE. 
+Produkt energetyczny: Energia pobrana (CK1125, CK1128), dotyczy wielkości pobranej z sieci elektroenergetycznej; Energia wprowadzona (CK1126, CK1129) dotyczy wielkości wprowadzonej do sieci.
+Produkt energetyczny: Bilans energii czynnej (CK1127, CK1130) dotyczy wielkości wyliczonej jako sumaryczne zbilansowanie w godzinie (t) ilości energii wprowadzonej do i pobranej z sieci z wszystkich faz. Wartości dodatnie (+) oznaczają energię pobraną z sieci, wartości ujemne bilansu energii czynnej (-) oznacza energię wprowadzoną do sieci.</xs:documentation>
+                    <xs:documentation xml:lang="en">Determination of the relevant energy product, according to the list. 
+In terms of the metering profiles measurements, means the transmission of profile data without taking into account additions/deductions, as opposed to the billing profiles measurements, which takes into account electricity losses or additions and deductions in the presented values, in accordance with the parameters of the agreement between the Operator and the KSE User.
+Energy product: Energy withdrawn (CK1125, CK1128), refers to the volume withdrawn from the power grid; Energy injected (CK1126, CK1129) refers to the volume injected into the grid.
+Energy product: Active energy balance (CK1127, CK1130) refers to the quantity calculated as the summed balance in hour (t) of the amount of energy injected into and withdrawn from the grid from all phases. Positive values (+) represent energy taken from the grid, negative values of the active energy balance (-) represent energy fed into the grid.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Okres integracji danych -->
+            <xs:element name="ResolutionDuration" type="bdt:MeasurementDataResolutionDurationType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Okres integracji danych</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-190</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Oznaczenie okresu pomiędzy poszczególnymi danymi. Obowiązującym standardem przekazywania danych profilowych jest CK0098 - Dane 15-minutowe.</xs:documentation>
+                    <xs:documentation xml:lang="en">Marking the period between each data. The applicable standard for the transmission of profile data is CK0098 - 15-minute data.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Wskazania produktu energetycznego -->
+            <xs:element name="EnergyProductMeasurement" type="unk_6_1_1_5:EnergyProductMeasurement" minOccurs="1" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Wskazania produktu energetycznego</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-347</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.2.1.1.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Wskazania produktu energetycznego                                                                                                            ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="EnergyProductMeasurement" type="unk_6_1_1_5:EnergyProductMeasurement"/>
+    <xs:complexType name="EnergyProductMeasurement">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_1_1_5:plName>Wskazania produktu energetycznego</unk_6_1_1_5:plName>
+                <unk_6_1_1_5:code>PL-347</unk_6_1_1_5:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.2.1.1.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Numer sekwencji -->
+            <xs:element name="SEQ" type="xs:integer" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Numer sekwencji</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-191</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Identyfikuje kolejne rekordy w profilu dobowym. Dla interwałów 15-minutowych będą to liczby od 1 do 96. W przypadku zmiany czasu z letniego na zimowy, dla ww. przypadku będą to interwały od 1 do 100, a dla zmiany czas z zimowego na letni, będą to interwały od 1 do 92.</xs:documentation>
+                    <xs:documentation xml:lang="en">Identifies records in the daily profile. For 15-minute intervals, these will be numbers from 1 to 96. For the change from summer to winter time, for the aforementioned case, these will be intervals from 1 to 100, and for the change from winter to summer time, these will be intervals from 1 to 92.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Wolumen -->
+            <xs:element name="Volume" type="bdt:RealVolumeType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Wolumen</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-192</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Określa Ilość energii w danym czasie, z uwzględnieniem czterech liczb po przecinku, dotyczy także wskazań mocy. Jednostką określającą pomiar wielkości danego typu produktu energetycznego określa się z przedrostkiem kilo, tj. kWh, kVarh, kW, kVar.</xs:documentation>
+                    <xs:documentation xml:lang="en">Determines the amount of energy at a given time, including four decimal numbers - applies to power measurements as well. The unit of measurement for the size of a particular type of energy product is specified with the prefix "kilo", i.e. kWh, kVarh, kW, kVar.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Typ danych profilowych -->
+            <xs:element name="QQ" type="bdt:DataQualityAssessmentType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_1_1_5:plName>Typ danych profilowych</unk_6_1_1_5:plName>
+                        <unk_6_1_1_5:code>PL-193</unk_6_1_1_5:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Określa pochodzenie oraz status przekazywanej danej pomiarowej, typ danej profilowej dotyczy każdego wskazania zgodnego z okresem integracji w ramach profilu. Poszczególne pozycje oznaczają:
+CK0031 - wartość odczytana, brak zdarzeń wskazujących na niepoprawność danych pomiarowych;
+CK0032 - wartość odczytana, zarejestrowano zdarzenia mogące świadczyć o niepoprawności danych pomiarowych;
+CK0033 - wartość wyznaczona dla zużycia rozliczanego na zasadach ryczałtu albo liczników bez zdalnej transmisji danych w oparciu o stany liczydeł albo korekta wskazań poprawnie odczytanych z LZO;
+CK0034 - wartość wyznaczona w przypadku nieodczytanego LZO albo liczników bez zdalnej transmisji;
+CK0035 - brak wymaganych danych pomiarowych.</xs:documentation>
+                    <xs:documentation xml:lang="en">QuantityQuality. Specifies the origin and status of the transmitted measurement data, the profile data type applies to each measurement consistent with the integration period within the profile. Individual items mean:
+CK0031 - value read, no events indicating incorrect measurement data;
+CK0032 - value read, events have been recorded that may indicate incorrectness of measurement data;
+CK0033 - value determined for consumption billed on a lump sum basis or meters without remote data transmission based on meter states or correction of readings correctly read from the Smart Meter;
+CK0034 - value determined in case of unread Smart Meter or meters without remote transmission;
+CK0035 - no meter data required.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
