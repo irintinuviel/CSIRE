@@ -312,10 +312,10 @@ parser_ppe.add_argument(
 )
 parser_ppe.add_argument(
     '-s',
-    default='profil_standardowy.xls',
+    default='profil_standardowy.xlsx',
     required=False,
     dest='plik_profil',
-    help='Nazwa pliku z profilem standardowym, domyslnie profil_standardowy.xls'
+    help='Nazwa pliku z profilem standardowym, domyslnie profil_standardowy.xlsx'
 )
 parser_ppe.add_argument(
     '-o',
@@ -338,7 +338,7 @@ parser_6_1_1_5.add_argument(
     default='profil_standardowy.xlsx',
     required=False,
     dest='plik_profil',
-    help='Nazwa pliku z profilem standardowym, domyslnie profil_standardowy.xls'
+    help='Nazwa pliku z profilem standardowym, domyslnie profil_standardowy.xlsx'
 )
 parser_6_1_1_5.add_argument(
     '-o',
@@ -374,7 +374,7 @@ parser_6_1_1_5.add_argument(
     default='profil_standardowy.xlsx',
     required=False,
     dest='plik_profil',
-    help='Nazwa pliku z profilem standardowym, domyslnie profil_standardowy.xls'
+    help='Nazwa pliku z profilem standardowym, domyslnie profil_standardowy.xlsx'
 )
 parser_6_1_1_5.add_argument(
     '-o',
