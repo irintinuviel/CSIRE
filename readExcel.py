@@ -8,7 +8,7 @@ def czytaj_arkusz(plik, arkusz):
         data.append([cell.value for cell in row])
     return data
 
-def getSheets(file):
+def czytajProfileStandardowe(file):
     sheets = {}
     profilB = czytaj_arkusz(file, "B11, B11em i B12")
     sheets["B11"] = profilB

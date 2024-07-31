@@ -3,10 +3,16 @@ import datetime
 import random
 import sys
 import threading
+from contextlib import redirect_stdout
+from os import listdir
+from os.path import isdir
+
 from lxml import etree
 from datetime import datetime
 from pytz import timezone
 import uuid
+
+from setuptools import namespaces
 
 from generatorPPE import generatePPE
 from readExcel import czytajProfileStandardowe
@@ -19,7 +25,7 @@ nsmap = {
     "t": "urn:pl:oire:technical:v1"
 }
 t = "{{{0}}}".format(nsmap["t"])
-u = "{{{0}}}".format(nsmap["u5"])
+
 now_utc = datetime.now(timezone('UTC'))
 today = now_utc.astimezone(timezone('CET'))
 
@@ -71,6 +77,7 @@ def koperta(dane, slownik,typ):
         u = "{{{0}}}".format(nsmap["u1"])
     else:
         root = etree.Element("{urn:pl:oire:unk_6_1_1_5:v1}DailyMeteringPointMeasurementsForwardNotification", nsmap=nsmap)
+        u = "{{{0}}}".format(nsmap["u5"])
         BusinessProcessMessageTypeText = "6.1.1.5."
 
     Header = etree.SubElement(root, u+"Header")
@@ -206,23 +213,27 @@ def saveToFile(element,num,katalog,doba,typ):
 
 
 #funkcja walidujaca wg pliku xsd
-def validate(filename, typ):
-    if typ == "6.1.1.1":
-        schemaname = '6_1_1_1.xsd'
+def validate(filename):
+    xml_document = etree.parse(filename)
+
+    typ = xml_document.xpath('//t:BusinessProcessMessageType/text()',namespaces=nsmap)[0]
+
+    if typ == "6.1.1.1.":
+        schemaname = 'xsdfiles/6_1_1_1.xsd'
     else:
-        schemaname= '6_1_1_5.xsd'
+        schemaname= 'xsdfiles/6_1_1_5.xsd'
     # Load the XML Schema
     with open(schemaname, 'rb') as schema_file:
         xmlschema_doc = etree.parse(schema_file)
         xmlschema = etree.XMLSchema(xmlschema_doc)
 
-    xml_document = etree.parse(filename)
+
     is_valid = xmlschema.validate(xml_document)
 
     if is_valid:
-        print("The XML document is valid.")
+        print(filename+" is valid.")
     else:
-        print("The XML document is not valid.")
+        print(filename+" is not valid.")
         print(xmlschema.error_log)
 
 
@@ -385,6 +396,22 @@ parser_6_1_1_5.add_argument(
     help='Wielkosc paczki, domyslnie 1000'
 )
 
+parser_walid = subparsers.add_parser('waliduj')
+
+parser_walid.add_argument(
+    '-i',
+    required=True,
+    dest='plik',
+    help='Nazwa pliku do walidacji'
+)
+parser_walid.add_argument(
+    '-o',
+    required=False,
+    dest='plik_wynikowy',
+    help='Nazwa pliku wynikowego'
+)
+
+
 args = parser.parse_args()
 
 if args.subcommand == 'generuj-ppe':
@@ -398,5 +425,24 @@ if args.subcommand == 'generuj-6.1.1.1':
     print('ppe: %s profil standardowy: %s katalog: %s doba: %s paczka: %s' % (args.plik_ppe, args.plik_profil,args.katalog_wynikowy,args.doba,args.paczka))
     generujProfile(args.plik_ppe, args.plik_profil,args.katalog_wynikowy,args.doba,args.paczka,"6.1.1.1")
 
+if args.subcommand == 'waliduj':
 
+    if isdir(args.plik):
+        if args.plik_wynikowy is None:
+            for filename in listdir(args.plik):
+                pathname= args.plik + "/" + filename
+                validate(pathname)
+        else:
+            for filename in listdir(args.plik):
+                pathname= args.plik + "/" + filename
+                with open(args.plik_wynikowy, 'a') as f:
+                    with redirect_stdout(f):
+                        validate(pathname)
 
+    else:
+        if args.plik_wynikowy is None:
+            validate(args.plik)
+        else:
+            with open(args.plik_wynikowy, 'a') as f:
+                with redirect_stdout(f):
+                    validate(args.plik)

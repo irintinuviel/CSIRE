@@ -3,7 +3,7 @@
 import math
 import random
 import openpyxl
-from readExcel import getSheets
+from readExcel import czytajProfileStandardowe
 
 def czytaj_plik(plik):
     wb = openpyxl.load_workbook(plik, data_only=True)
@@ -26,9 +26,10 @@ def czytaj_plik(plik):
 
     return finaldata
 
-def generateData(infile,profil,outfile):
+def generatePPE(infile, profil, outfile):
     data = czytaj_plik(infile)
-    sheets = getSheets(profil)
+    #czyta profile standardowe żeby określić listę możliwych taryf
+    sheets = czytajProfileStandardowe(profil)
     count = 0
     for row in data:
         n = row[0]
