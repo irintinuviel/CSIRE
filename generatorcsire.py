@@ -22,6 +22,7 @@ from readExcel import czytajProfileStandardowe
 nsmap = {
     "u1": "urn:pl:oire:unk_6_1_1_1:v1",
     "u5": "urn:pl:oire:unk_6_1_1_5:v1",
+    "u7": "urn:pl:oire:unk_7_1_1_4:v1",
     "t": "urn:pl:oire:technical:v1"
 }
 t = "{{{0}}}".format(nsmap["t"])
@@ -75,6 +76,10 @@ def koperta(dane, slownik,typ):
         root = etree.Element("{urn:pl:oire:unk_6_1_1_1:v1}DailyMeteringPointMeasurementsNotification", nsmap=nsmap)
         BusinessProcessMessageTypeText = "6.1.1.1."
         u = "{{{0}}}".format(nsmap["u1"])
+    elif typ == "7.1.1.4":
+        root = etree.Element("{urn:pl:oire:unk_7_1_1_4:v1}DailyMeteringPointMeasurementsNotification", nsmap=nsmap)
+        BusinessProcessMessageTypeText = "7.1.1.4."
+        u = "{{{0}}}".format(nsmap["u7"])
     else:
         root = etree.Element("{urn:pl:oire:unk_6_1_1_5:v1}DailyMeteringPointMeasurementsForwardNotification", nsmap=nsmap)
         u = "{{{0}}}".format(nsmap["u5"])
@@ -142,11 +147,19 @@ def addtopayload(payload,kodPPE,pomiary,roczneZuzycie,typ,u):
 
     if typ == "6.1.1.1":
         DailyMeteringPointMeasurementsForward = etree.SubElement(payload, u+"DailyMeteringPointMeasurements")
+        ReferenceTransactionId = etree.SubElement(DailyMeteringPointMeasurementsForward, u + "ReferenceTransactionId")
+        ReferenceTransactionId.text = ReferenceTransactionIdText
+    elif typ == "7.1.1.4":
+        DailyMeteringPointMeasurementsForward = etree.SubElement(payload, u + "DailyMeteringPointMeasurements")
+        Miscellaneous = etree.SubElement(DailyMeteringPointMeasurementsForward, u+"Miscellaneous")
+        ProcessInstanceId = etree.SubElement(Miscellaneous, u+"ProcessInstanceId")
+        ProcessInstanceId.text = ReferenceTransactionIdText
     else:
         DailyMeteringPointMeasurementsForward = etree.SubElement(payload, u + "DailyMeteringPointMeasurementsForward")
+        ReferenceTransactionId = etree.SubElement(DailyMeteringPointMeasurementsForward, u + "ReferenceTransactionId")
+        ReferenceTransactionId.text = ReferenceTransactionIdText
 
-    ReferenceTransactionId= etree.SubElement(DailyMeteringPointMeasurementsForward, u+"ReferenceTransactionId")
-    ReferenceTransactionId.text = ReferenceTransactionIdText
+
     DataSubject = etree.SubElement(DailyMeteringPointMeasurementsForward, u+"DataSubject")
     DataSubjectType = etree.SubElement(DataSubject, u+"DataSubject")
     DataSubjectType.text = DataSubjectTypeText
@@ -160,8 +173,10 @@ def addtopayload(payload,kodPPE,pomiary,roczneZuzycie,typ,u):
     PeriodStart.text = str(date) + "T00:00:00+02:00"
     PeriodEnd = etree.SubElement(BasicData, u+"PeriodEnd")
     PeriodEnd.text = str(date) + "T23:59:59+02:00"
-    DataVersionNumber = etree.SubElement(BasicData, u+"DataVersionNumber")
-    DataVersionNumber.text = DataVersionNumberText
+
+    if not typ == "7.1.1.4":
+        DataVersionNumber = etree.SubElement(BasicData, u+"DataVersionNumber")
+        DataVersionNumber.text = DataVersionNumberText
 
     for e in roczneZuzycie:
         EnergyProduct = etree.SubElement(BasicData, u+"EnergyProduct")
@@ -204,6 +219,8 @@ def prettyprint(element, **kwargs):
 def saveToFile(element,num,katalog,doba,typ):
     if typ == "6.1.1.1":
         filename = katalog + "/6.1.1.1" + str(doba.strftime("_%y-%m-%d_")) + str(num) + ".xml"
+    elif typ == "7.1.1.4":
+        filename = katalog + "/7.1.1.4" + str(doba.strftime("_%y-%m-%d_")) + str(num) + ".xml"
     else:
         filename = katalog+"/6.1.1.5"+str(doba.strftime("_%y-%m-%d_"))+str(num)+".xml"
     f = open(filename, "w")
@@ -220,6 +237,8 @@ def validate(filename):
 
     if typ == "6.1.1.1.":
         schemaname = 'xsdfiles/6_1_1_1.xsd'
+    elif typ == "7.1.1.4.":
+        schemaname = 'xsdfiles/7_1_1_4.xsd'
     else:
         schemaname= 'xsdfiles/6_1_1_5.xsd'
     # Load the XML Schema
@@ -360,35 +379,69 @@ parser_6_1_1_5.add_argument(
     help='Wielkosc paczki, domyslnie 1000'
 )
 
-parser_6_1_1_5 = subparsers.add_parser('generuj-6.1.1.1')
-
-parser_6_1_1_5.add_argument(
+parser_6_1_1_1 = subparsers.add_parser('generuj-6.1.1.1')
+parser_6_1_1_1.add_argument(
     '-i',
     default='ppe.csv',
     required= False,
     dest='plik_ppe',
     help='Nazwa pliku z ppe, domyslnie ppe.csv'
 )
-parser_6_1_1_5.add_argument(
+parser_6_1_1_1.add_argument(
     '-s',
     default='profil_standardowy.xlsx',
     required=False,
     dest='plik_profil',
     help='Nazwa pliku z profilem standardowym, domyslnie profil_standardowy.xlsx'
 )
-parser_6_1_1_5.add_argument(
+parser_6_1_1_1.add_argument(
     '-o',
     required=True,
     dest='katalog_wynikowy',
     help='Sciezka do katalogu wynikowego'
 )
-parser_6_1_1_5.add_argument(
+parser_6_1_1_1.add_argument(
     '-d',
     required=True,
     dest='doba',
     help='Doba w formacie RRRRMMDD'
 )
-parser_6_1_1_5.add_argument(
+parser_6_1_1_1.add_argument(
+    '-p',
+    required=False,
+    default=1000,
+    dest='paczka',
+    help='Wielkosc paczki, domyslnie 1000'
+)
+
+parser_7_1_1_4 = subparsers.add_parser('generuj-7.1.1.4')
+parser_7_1_1_4.add_argument(
+    '-i',
+    default='ppe.csv',
+    required= False,
+    dest='plik_ppe',
+    help='Nazwa pliku z ppe, domyslnie ppe.csv'
+)
+parser_7_1_1_4.add_argument(
+    '-s',
+    default='profil_standardowy.xlsx',
+    required=False,
+    dest='plik_profil',
+    help='Nazwa pliku z profilem standardowym, domyslnie profil_standardowy.xlsx'
+)
+parser_7_1_1_4.add_argument(
+    '-o',
+    required=True,
+    dest='katalog_wynikowy',
+    help='Sciezka do katalogu wynikowego'
+)
+parser_7_1_1_4.add_argument(
+    '-d',
+    required=True,
+    dest='doba',
+    help='Doba w formacie RRRRMMDD'
+)
+parser_7_1_1_4.add_argument(
     '-p',
     required=False,
     default=1000,
@@ -397,7 +450,6 @@ parser_6_1_1_5.add_argument(
 )
 
 parser_walid = subparsers.add_parser('waliduj')
-
 parser_walid.add_argument(
     '-i',
     required=True,
@@ -411,7 +463,6 @@ parser_walid.add_argument(
     help='Nazwa pliku wynikowego'
 )
 
-
 args = parser.parse_args()
 
 if args.subcommand == 'generuj-ppe':
@@ -424,6 +475,9 @@ if args.subcommand == 'generuj-6.1.1.5':
 if args.subcommand == 'generuj-6.1.1.1':
     print('ppe: %s profil standardowy: %s katalog: %s doba: %s paczka: %s' % (args.plik_ppe, args.plik_profil,args.katalog_wynikowy,args.doba,args.paczka))
     generujProfile(args.plik_ppe, args.plik_profil,args.katalog_wynikowy,args.doba,args.paczka,"6.1.1.1")
+if args.subcommand == 'generuj-7.1.1.4':
+    print('ppe: %s profil standardowy: %s katalog: %s doba: %s paczka: %s' % (args.plik_ppe, args.plik_profil,args.katalog_wynikowy,args.doba,args.paczka))
+    generujProfile(args.plik_ppe, args.plik_profil,args.katalog_wynikowy,args.doba,args.paczka,"7.1.1.4")
 
 if args.subcommand == 'waliduj':
 
