@@ -71,13 +71,12 @@ def controlSum(code):
 
 def generateGS1(last):
     KRAJ= "590"
-    OSD= "1234"
+    OSD= "5435"
     number = last+1
     kod = KRAJ+OSD+str(number)
     kontrolna= controlSum(kod)
     kod += str(kontrolna)
     return number,kod
-
 
 
 
