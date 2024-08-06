@@ -26,3 +26,24 @@ def czytajProfileStandardowe(file):
     sheets["G12w"] = czytaj_arkusz(file,"G12w")
     sheets["G12as"] = czytaj_arkusz(file,"G12as")
     return sheets
+
+def czytajOBIS(plik):
+    wb = openpyxl.load_workbook(plik, data_only=True)
+    sheet = wb.active
+    data = []
+    slownikOBIS = {}
+    for row in sheet.iter_rows(min_row=4, max_row=34,min_col=1, max_col=9):
+        data.append([cell.value for cell in row])
+
+    for e in data:
+        if e[8] is not None:
+            obis = e[8].split(',')
+            slownikOBIS[e[0]]= obis
+
+    return slownikOBIS
+
+
+
+
+
+

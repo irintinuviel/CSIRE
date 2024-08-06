@@ -1,0 +1,764 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:bdt="urn:pl:oire:businessDataTypes:v1" xmlns:tech="urn:pl:oire:technical:v1" xmlns:unk_6_2_1_1="urn:pl:oire:unk_6_2_1_1:v1" elementFormDefault="qualified" targetNamespace="urn:pl:oire:unk_6_2_1_1:v1">
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Wersja przedprodukcyjna z 21.06.2024                                                                                                         ==== -->
+    <!-- ====================================================================================================================================================== -->
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Import                                                                                                                                       ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:import namespace="urn:pl:oire:businessDataTypes:v1" schemaLocation="../businessDataTypes.xsd"/>
+    <xs:import namespace="urn:pl:oire:technical:v1" schemaLocation="../technical.xsd"/>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== 6.2.1.1. Przekazanie wskazań pomiarowych                                                                                                     ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="NewMeasurementsNotification" type="unk_6_2_1_1:NewMeasurementsNotification"/>
+    <xs:complexType name="NewMeasurementsNotification">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_2_1_1:plName>6.2.1.1. Przekazanie wskazań pomiarowych</unk_6_2_1_1:plName>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Nagłówek -->
+            <xs:element name="Header" type="tech:Header" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Nagłówek</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-700</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Kontekst -->
+            <xs:element name="ProcessEnergyContext" type="tech:ProcessEnergyContext" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Kontekst</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-715</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- 6.2.1.1. Payload Przekazanie wskazań pomiarowych -->
+            <xs:element name="Payload" type="unk_6_2_1_1:NewMeasurementsNotificationPayload" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>6.2.1.1. Payload Przekazanie wskazań pomiarowych</unk_6_2_1_1:plName>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== 6.2.1.1. Payload Przekazanie wskazań pomiarowych                                                                                             ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="NewMeasurementsNotificationPayload" type="unk_6_2_1_1:NewMeasurementsNotificationPayload"/>
+    <xs:complexType name="NewMeasurementsNotificationPayload">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_2_1_1:plName>6.2.1.1. Payload Przekazanie wskazań pomiarowych</unk_6_2_1_1:plName>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Rekord operacji masowej -->
+            <xs:element name="NewMeasurements" type="unk_6_2_1_1:NewMeasurements" minOccurs="1" maxOccurs="1000">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Rekord operacji masowej</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-711</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Rekord operacji masowej                                                                                                                      ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="NewMeasurements" type="unk_6_2_1_1:NewMeasurements"/>
+    <xs:complexType name="NewMeasurements">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_2_1_1:plName>Rekord operacji masowej</unk_6_2_1_1:plName>
+                <unk_6_2_1_1:code>PL-711</unk_6_2_1_1:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Identyfikator transakcji -->
+            <xs:element name="ReferenceTransactionId" type="bdt:UuidType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Identyfikator transakcji</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-710</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Identyfikator rekordu nadawany przez Operatora, używany do korelacji rekordu żądania do rekordu wyniku</xs:documentation>
+                    <xs:documentation xml:lang="en">Identifier assigned by Operator, used for batch record identification</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Przedmiot danych -->
+            <xs:element name="DataSubject" type="unk_6_2_1_1:DataSubject" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Przedmiot danych</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-160</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.1.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Informacje podstawowe -->
+            <xs:element name="BasicData" type="unk_6_2_1_1:BasicData" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Informacje podstawowe</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-325</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.2.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Licznik -->
+            <xs:element name="Meter" type="unk_6_2_1_1:Meter" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Licznik</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-348</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.3.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Ryczałt -->
+            <xs:element name="FlatRate" type="unk_6_2_1_1:FlatRate" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Ryczałt</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-327</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.4.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Przedmiot danych                                                                                                                             ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="DataSubject" type="unk_6_2_1_1:DataSubject"/>
+    <xs:complexType name="DataSubject">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_2_1_1:plName>Przedmiot danych</unk_6_2_1_1:plName>
+                <unk_6_2_1_1:code>PL-160</unk_6_2_1_1:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.1.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Przedmiot danych -->
+            <xs:element name="DataSubject" type="bdt:DataSubjectType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Przedmiot danych</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-161</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Określa, czy przekazywane lub udostępniane dane pomiarowe dotyczą Punktu pomiarowego, czy obiektu pomiarowego.</xs:documentation>
+                    <xs:documentation xml:lang="en">Determines whether the transferred or shared metering data pertains to a Metering Point or a Metering Facility.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Dane PP - ogólne -->
+            <xs:element name="MeteringPointData_Basic" type="unk_6_2_1_1:MeteringPointData_Basic" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Dane PP - ogólne</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-300</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.1.1.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Dane obiektu - ogólne -->
+            <xs:element name="FacilityData_Basic" type="unk_6_2_1_1:FacilityData_Basic" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Dane obiektu - ogólne</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-425</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.1.2.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Dane PP - ogólne                                                                                                                             ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="MeteringPointData_Basic" type="unk_6_2_1_1:MeteringPointData_Basic"/>
+    <xs:complexType name="MeteringPointData_Basic">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_2_1_1:plName>Dane PP - ogólne</unk_6_2_1_1:plName>
+                <unk_6_2_1_1:code>PL-300</unk_6_2_1_1:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.1.1.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Kod PP -->
+            <xs:element name="MeteringPointCode" type="bdt:MeteringPointCodeType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Kod PP</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-001</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Kod identyfikujący Punkt pomiarowy - zgodny ze standardem GS1.</xs:documentation>
+                    <xs:documentation xml:lang="en">Metering Point Identification Code - compliant with the GS1 standard.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Dane obiektu - ogólne                                                                                                                        ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="FacilityData_Basic" type="unk_6_2_1_1:FacilityData_Basic"/>
+    <xs:complexType name="FacilityData_Basic">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_2_1_1:plName>Dane obiektu - ogólne</unk_6_2_1_1:plName>
+                <unk_6_2_1_1:code>PL-425</unk_6_2_1_1:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.1.2.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Identyfikator obiektu -->
+            <xs:element name="FacilityIdentifier" type="bdt:FacilityIdentifierType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Identyfikator obiektu</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-424</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Unikalny kod identyfikujący obiekt pomiarowy. Struktura Identyfikatora obiektu składa się z:
+1) kodu EIC (np. 19X000000000001C),
+2) oznaczenia przedmiotu identyfikacji (OP - obiektu pomiarowego),
+3) unikalnego dopełnienia nadawanego przez Operatora (np. 11111111).</xs:documentation>
+                    <xs:documentation xml:lang="en">Unique code identifying the metering facility. The structure of the facility Identifier consists of:
+1) EIC code (e.g. 19X000000000001C),
+2) designation of the facility of identification (OP - measurement facility),
+3) a unique complement assigned by the Operator (e.g. 11111111).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Informacje podstawowe                                                                                                                        ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="BasicData" type="unk_6_2_1_1:BasicData"/>
+    <xs:complexType name="BasicData">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_2_1_1:plName>Informacje podstawowe</unk_6_2_1_1:plName>
+                <unk_6_2_1_1:code>PL-325</unk_6_2_1_1:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.2.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Numer wersji danych -->
+            <xs:element name="DataVersionNumber" type="bdt:PositiveInteger2_Type" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Numer wersji danych</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-199</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Oznaczenie kolejnych wersji przekazywanych danych. Wersja oznaczona nr."1" - pierwsze przekazanie danych pomiarowych, kolejne liczby naturalne - kolejne wersje/korekty.</xs:documentation>
+                    <xs:documentation xml:lang="en">Designation of successive versions of the transmitted data. Version marked no."1" - the first transmission of measurement data, subsequent natural numbers - subsequent versions/corrections.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Przyczyna korekty danych pomiarowych -->
+            <xs:element name="MeasurementDataCorrectionReason" type="bdt:MeasurementDataCorrectionReasonType" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Przyczyna korekty danych pomiarowych</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-156</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Przyczyna przekazania korekty danych pomiarowych.</xs:documentation>
+                    <xs:documentation xml:lang="en">Reason for transmission of measurement data correction.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- ID_korygowanej_transakcji -->
+            <xs:element name="CorrectedReferenceTransactionId" type="bdt:UuidType" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>ID_korygowanej_transakcji</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-200</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Identyfikator transakcji (UUID), która jest przedmiotem korekty, określony przez nadawcę korygowanej transakcji.</xs:documentation>
+                    <xs:documentation xml:lang="en">The identifier of the transaction (UUID), which is the subject of the correction, specified by the sender of the corrected transaction.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Typ danych pomiarowych -->
+            <xs:element name="MeasurementDataType" type="bdt:MeasurementDataType_Type" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Typ danych pomiarowych</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-223</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Określenie, czy przekazanie danych pomiarowych wynika ze wskazań rejestrów OBIS rejestrowanych w liczniku bądź wyznaczanych w systemie pomiarowym, czy ryczałtu.</xs:documentation>
+                    <xs:documentation xml:lang="en">Determination whether the transfer of metering data results from OBIS registers registered in the meter or determined in the metering system, or a lump sum.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Sposób rozliczenia przekroczenia poboru mocy -->
+            <xs:element name="ExcessPowerConsumptionBillingMethod" type="bdt:ExcessPowerConsumptionBillingMethodType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Sposób rozliczenia przekroczenia poboru mocy</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-231</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Określenie sposobu rozliczenia przekroczenia poboru mocy, zgodnie z taryfą OSD.</xs:documentation>
+                    <xs:documentation xml:lang="en">Determination of the method of accounting for excess power consumption, in accordance with the tariff of the DSO.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Powód publikacji -->
+            <xs:element name="PublicationReason" type="unk_6_2_1_1:PublicationReason" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Powód publikacji</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-496</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.2.1.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Powód publikacji                                                                                                                             ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="PublicationReason" type="unk_6_2_1_1:PublicationReason"/>
+    <xs:complexType name="PublicationReason">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_2_1_1:plName>Powód publikacji</unk_6_2_1_1:plName>
+                <unk_6_2_1_1:code>PL-496</unk_6_2_1_1:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.2.1.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Powód publikacji danych pomiarowych -->
+            <xs:element name="PublicationReason" type="bdt:MeasurementDataPublicationReason_Type" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Powód publikacji danych pomiarowych</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-497</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Poszczególne pozycje słownikowe oznaczają:
+CK0130 - dane pomiarowe przekazywane są w związku z pozytywnie zakończonym procesem rynku energii, w wyniku którego zmianie uległ przynajmniej jeden atrybuty charakterystyki PP istotny z punktu widzenia rozliczeń;
+CK0131 - dane pomiarowe przekazane są zgodnie z harmonogramem odczytu; 
+CK0132 - dane pomiarowe przekazane na żądanie Użytkownika profesjonalnego;
+CK0133 - inny powód przekazania danych pomiarowych (kontrolny/pośredni).</xs:documentation>
+                    <xs:documentation xml:lang="en">Individual dictionary entries mean:
+CK0130 - metering data is provided in connection with a successfully completed energy market process, as a result of which at least one attribute of the MP characteristics relevant to billing has changed;
+CK0131 - metering data are transferred in accordance with the reading schedule; 
+CK0132 - metering data transferred at the request of a Professional User;
+CK0133 - other reason for transmission of metering data (control/intermediate).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Licznik                                                                                                                                      ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="Meter" type="unk_6_2_1_1:Meter"/>
+    <xs:complexType name="Meter">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_2_1_1:plName>Licznik</unk_6_2_1_1:plName>
+                <unk_6_2_1_1:code>PL-348</unk_6_2_1_1:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.3.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Nr licznika -->
+            <xs:element name="MeterNumber" type="bdt:MeterNumberType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Nr licznika</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-097</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Numer seryjny licznika energii, dla którego przekazywane są dane pomiarowe.</xs:documentation>
+                    <xs:documentation xml:lang="en">Serial number of the energy meter for which metering data is provided.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Rejestr pomiarowy -->
+            <xs:element name="MeteringRegister" type="unk_6_2_1_1:MeteringRegister" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Rejestr pomiarowy</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-212</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.3.1.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Rejestr pomiarowy                                                                                                                            ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="MeteringRegister" type="unk_6_2_1_1:MeteringRegister"/>
+    <xs:complexType name="MeteringRegister">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_2_1_1:plName>Rejestr pomiarowy</unk_6_2_1_1:plName>
+                <unk_6_2_1_1:code>PL-212</unk_6_2_1_1:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.3.1.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Typ rejestru -->
+            <xs:element name="RegisterType" type="bdt:MeterRegistryType_Type" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Typ rejestru</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-088</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Zgodnie z opisem protokołu IEC62056, atrybut wskazuje rejestr pomiarowy licznika energii elektrycznej, którego dotyczy przekazywanie wskazań pomiarowych.</xs:documentation>
+                    <xs:documentation xml:lang="en">According to the description of the IEC62056 protocol, the attribute indicates the measurement register of the electricity meter to which the transmission of measurement readings applies.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Wskazania energii -->
+            <xs:element name="EnergyMeasurement" type="unk_6_2_1_1:EnergyMeasurement" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Wskazania energii</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-326</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.3.1.1.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Wskazania mocy -->
+            <xs:element name="PowerMeasurement" type="unk_6_2_1_1:PowerMeasurement" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Wskazania mocy</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-331</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.3.1.2.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Wskazania energii                                                                                                                            ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="EnergyMeasurement" type="unk_6_2_1_1:EnergyMeasurement"/>
+    <xs:complexType name="EnergyMeasurement">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_2_1_1:plName>Wskazania energii</unk_6_2_1_1:plName>
+                <unk_6_2_1_1:code>PL-326</unk_6_2_1_1:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.3.1.1.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Typ wskazania -->
+            <xs:element name="MeasurementType" type="bdt:MeasurementType_Type" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Typ wskazania</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-197</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Określa, czy przekazane dane pomiarowe dotyczą pojedynczego wskazania w puncie czasu, czy dotyczą okresu czasu określonego przez dwa wskazania - początkowe oraz końcowe.</xs:documentation>
+                    <xs:documentation xml:lang="en">Determines whether the transferred metering data relates to a single measurement at a point in time, or whether it relates to a period of time defined by two measurements - initial and final.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Pochodzenie bieżącego wskazania -->
+            <xs:element name="MeasurementSource" type="bdt:MeasurementSourceType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Pochodzenie bieżącego wskazania</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-196</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Kod specyfikujący pochodzenie wskazania.</xs:documentation>
+                    <xs:documentation xml:lang="en">Code specifying the origin of the measurement.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Data i czas bieżącego wskazania -->
+            <xs:element name="MeasurementDateTime" type="xs:dateTime" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Data i czas bieżącego wskazania</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-198</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Data i czas bieżącego wskazania dla wyznaczonych danych pomiarowych.</xs:documentation>
+                    <xs:documentation xml:lang="en">Date and time of current measurement for designated metering data.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Wskazanie bieżące rejestru -->
+            <xs:element name="MeterRegisterValue" type="bdt:MeterRegistryValueType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Wskazanie bieżące rejestru</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-184</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Bieżące wskazanie rejestru licznika z uwzględnieniem czterech miejsc po przecinku.</xs:documentation>
+                    <xs:documentation xml:lang="en">Current meter register measurement with four decimal places.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Mnożna liczydła -->
+            <xs:element name="MeterMultiplier" type="bdt:MultiplierType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Mnożna liczydła</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-208</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Współczynnik wynikający z parametrów układu pomiarowo-rozliczeniowego.</xs:documentation>
+                    <xs:documentation xml:lang="en">Factor resulting from the parameters of the metering and billing system.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Zdarzenia dla rejestru -->
+            <xs:element name="MeterRegisterEventType" type="bdt:MeterRegistryEventType_Type" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Zdarzenia dla rejestru</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-187</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Powiadomienie o zdarzeniu dla rejestru licznika.</xs:documentation>
+                    <xs:documentation xml:lang="en">Event notification for the meter register.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Data i czas poprzedniego wskazania -->
+            <xs:element name="PreviousMeasurementDateTime" type="xs:dateTime" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Data i czas poprzedniego wskazania</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-194</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Data i czas poprzedniego odczytu albo wyznaczenia danych pomiarowych.</xs:documentation>
+                    <xs:documentation xml:lang="en">Date and time of previous reading or designated metering data.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Wskazanie poprzednie rejestru -->
+            <xs:element name="PreviousMeterRegisterValue" type="bdt:MeterRegistryValueType" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Wskazanie poprzednie rejestru</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-183</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Poprzednie wskazanie rejestru licznika z uwzględnieniem czterech miejsc po przecinku.</xs:documentation>
+                    <xs:documentation xml:lang="en">Previous meter register measurement including four decimal places.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Podsumowanie wskazania -->
+            <xs:element name="MeasurementInformation" type="unk_6_2_1_1:MeasurementInformation" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Podsumowanie wskazania</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-328</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sekcja 1.3.1.1.1.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Podsumowanie wskazania                                                                                                                       ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="MeasurementInformation" type="unk_6_2_1_1:MeasurementInformation"/>
+    <xs:complexType name="MeasurementInformation">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_2_1_1:plName>Podsumowanie wskazania</unk_6_2_1_1:plName>
+                <unk_6_2_1_1:code>PL-328</unk_6_2_1_1:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.3.1.1.1.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Wolumen -->
+            <xs:element name="Volume" type="bdt:VolumeType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Wolumen</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-204</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Ilość energii dla rejestru, wynikająca z różnicy wskazań oraz mnożnej. Określana zgodnie z wybranym typem rejestru w [kWh], [kVarh], z dokładnością do czterech miejsc po przecinku.</xs:documentation>
+                    <xs:documentation xml:lang="en">The amount of energy for the register, resulting from the difference in measurements and the multiplier. Determined according to the selected register type in [kWh], [kVarh], to four decimal places.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Straty -->
+            <xs:element name="LossVolume" type="bdt:RealVolumeType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Straty</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-202</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Wielkość strat energii dla każdego rejestru z uwzględnieniem mnożnej liczydła. W przypadku wystąpienia korekty wolumenowej wielkosć strat wyliczana jest ze zużycia po odjęciu/dodaniu korekty.
+Wartości ujemne pomniejszają ilość energii, dodatnie powiększają wolumen. Jeżeli straty nie są określone, należy przyjąć wartość "0".</xs:documentation>
+                    <xs:documentation xml:lang="en">The volume of energy losses for each register taking into account the meter multiplier. If there is a volume adjustment, the volume of losses is calculated from the consumption after subtracting/adding the adjustment.
+Negative values decrease the amount of energy, positive values increase the volume. If the losses are not specified, take the value of "0".</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Korekta wolumenu -->
+            <xs:element name="CorrectedVolume" type="bdt:RealVolumeType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Korekta wolumenu</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-201</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Korekta wolumenu energii dla poszczególnych rejestrów z uwzględnieniem mnożnej liczydła.
+Wartości ujemne pomniejszają wolumen, dodatnie powiększają wolumen. W przypadku braku potrzeby doliczeń/odliczeń ilości energii należy wprowadzić wartość "0".</xs:documentation>
+                    <xs:documentation xml:lang="en">Adjustment of the volume of energy for individual registers taking into account the meter multiplier.
+Negative values decrease the volume, positive values increase the volume. If there is no need for energy volume additions/deductions, enter the value "0".</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Przyczyna korekty wolumenu -->
+            <xs:element name="VolumeCorrectionReason" type="bdt:VolumeCorrectionReasonType" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Przyczyna korekty wolumenu</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-203</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Określenie przyczyny korekty wolumenu dla rejestru pomiarowego.</xs:documentation>
+                    <xs:documentation xml:lang="en">Determination of the reason for volume correction for the metering register.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Sumaryczny wolumen -->
+            <xs:element name="TotalVolume" type="bdt:VolumeType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Sumaryczny wolumen</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-205</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Sumaryczna ilość energii, wyznaczona jako suma wartości atrybutów: wolumen, straty i korekta wolumenu wielkość wolumenu. Określana zgodnie z wybranym typem rejestru w [kWh], [kVarh].</xs:documentation>
+                    <xs:documentation xml:lang="en">The total amount of energy, determined as the sum of the values of the attributes: volume, losses and volume adjustment volume. Determined according to the selected register type in [kWh], [kVarh].</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Wskazania mocy                                                                                                                               ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="PowerMeasurement" type="unk_6_2_1_1:PowerMeasurement"/>
+    <xs:complexType name="PowerMeasurement">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_2_1_1:plName>Wskazania mocy</unk_6_2_1_1:plName>
+                <unk_6_2_1_1:code>PL-331</unk_6_2_1_1:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.3.1.2.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Moc pobrana maksymalna -->
+            <xs:element name="MaxConsumedPower" type="bdt:PowerKiloWattsType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Moc pobrana maksymalna</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-282</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Wartości te stanowią podstawę do pobrania przez Operatora opłaty za przekroczenie mocy umownej. Wartość uwzględnia mnożną, straty, korekty.
+Dla przekroczenia poboru mocy jako: 
+1) sumy wartości należy podać maksymalne wartości poboru mocy (maksymalnie 10 dla każdego miesiąca), 
+2) 10 krotności wartości, należy podać jedną wartość (dla całego okresu rozliczeniowego) przed mnożeniem przez 10.</xs:documentation>
+                    <xs:documentation xml:lang="en">These values are the basis for the Operator to charge for exceeding the contracted capacity. The value takes into account multiplication, losses, adjustments.
+For excess power consumption as: 
+1) sums of values, the maximum values of power consumption should be given (maximum 10 for each month), 
+2) 10 times the value, provide one value (for the entire billing period) before multiplying by 10.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Data i czas poboru mocy -->
+            <xs:element name="MaxConsumedPowerDateTime" type="xs:dateTime" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Data i czas poboru mocy</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-283</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Określenie daty i czasu wskazania poboru mocy.</xs:documentation>
+                    <xs:documentation xml:lang="en">Specifying the date and time of measurement of power consumption.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- ====================================================================================================================================================== -->
+    <!-- ==== Ryczałt                                                                                                                                      ==== -->
+    <!-- ====================================================================================================================================================== -->
+    <xs:element name="FlatRate" type="unk_6_2_1_1:FlatRate"/>
+    <xs:complexType name="FlatRate">
+        <xs:annotation>
+            <xs:appinfo>
+                <unk_6_2_1_1:plName>Ryczałt</unk_6_2_1_1:plName>
+                <unk_6_2_1_1:code>PL-327</unk_6_2_1_1:code>
+            </xs:appinfo>
+            <xs:documentation xml:lang="pl">Sekcja 1.4.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- Data początku okresu -->
+            <xs:element name="PeriodStartDate" type="xs:date" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Data początku okresu</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-179</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Data początku przedziału czasowego, dla którego są przekazywane dane (od początku doby).</xs:documentation>
+                    <xs:documentation xml:lang="en">The date of the beginning of the time interval for which data is provided (from the beginning of the day).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Data końca okresu -->
+            <xs:element name="PeriodEndDate" type="xs:date" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Data końca okresu</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-180</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Data końcowa przedziału czasowego, dla którego są przekazane dane (włącznie).</xs:documentation>
+                    <xs:documentation xml:lang="en">The end date of the time interval for which the data are transferred (inclusive).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
+            <!-- Wolumen -->
+            <xs:element name="Volume" type="bdt:VolumeType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <unk_6_2_1_1:plName>Wolumen</unk_6_2_1_1:plName>
+                        <unk_6_2_1_1:code>PL-185</unk_6_2_1_1:code>
+                    </xs:appinfo>
+                    <xs:documentation xml:lang="pl">Ilość energii wyznaczona dla ryczałtu, określona w [kWh].</xs:documentation>
+                    <xs:documentation xml:lang="en">The amount of energy determined for a lump sum, specified in [kWh].</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
