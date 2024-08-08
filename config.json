@@ -1,0 +1,9 @@
+{
+  "username": "artemis",
+
+  "password": "artemis",
+
+  "brokerurl": "tcp://localhost:61616",
+
+  "queue": "$sys.mqtt.sessions::kolejka"
+}

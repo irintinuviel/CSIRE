@@ -1,5 +1,8 @@
 import argparse
+import concurrent.futures
 import datetime
+import logging
+import os
 import random
 import string
 import sys
@@ -13,6 +16,7 @@ from pytz import timezone
 import uuid
 
 from setuptools import namespaces
+from funkcjekolejki import send_file_to_queue, load_config, init_logging, get_messages_from_queue
 from generatorPPE import generatePPE
 from readExcel import czytajProfileStandardowe, czytajOBIS
 
@@ -65,14 +69,11 @@ ResolutionDurationText = "CK0098"
 
 billingmethods = ["CK0131", "CK0130"]
 weights = [0.98, 0.02]
-
-
 #Koniec stałych
 
-def zuzycieRoczne(klasa):
+def zuzycie_roczne(klasa):
     podstawa = podstawy[klasa[0]]
     return random.uniform(1 / 5, 5) * podstawa
-
 
 def koperta(dane, slownik, typ, doba):
     if typ == "6.1.1.1":
@@ -140,14 +141,14 @@ def koperta(dane, slownik, typ, doba):
     payload = etree.SubElement(root, u + "Payload")
 
     if typ == "6.2.1.1":
-        generujDaneWskazan(dane, slownik, payload, u)
+        generuj_dane_wskazan(dane, slownik, payload, u)
     else:
-        generujDaneProfilowe(dane, slownik, payload, doba, typ, u)
+        generuj_dane_profilowe(dane, slownik, payload, doba, typ, u)
 
     return root
 
 
-def generujDaneProfilowe(dane, slownik, payload, doba, typ, u):
+def generuj_dane_profilowe(dane, slownik, payload, doba, typ, u):
     for e in dane:
         roczneZuzycie = []
         taryfa = e[1]
@@ -155,13 +156,13 @@ def generujDaneProfilowe(dane, slownik, payload, doba, typ, u):
 
         for c in e[3]:
             # TODO nie dla wszystkich produktów potrzebne
-            zuzycie = zuzycieRoczne(e[2])
+            zuzycie = zuzycie_roczne(e[2])
             roczneZuzycie.append([c, zuzycie])
 
-        profilePayload(payload, e[0], tabela, roczneZuzycie, doba, typ, u)
+        profile_payload(payload, e[0], tabela, roczneZuzycie, doba, typ, u)
 
 
-def generujDaneWskazan(dane, slownikOBIS, payload, u):
+def generuj_dane_wskazan(dane, slownikOBIS, payload, u):
     for e in dane:
 
         stref = int(e[1][2])
@@ -173,10 +174,10 @@ def generujDaneWskazan(dane, slownikOBIS, payload, u):
                     if i < max:
                         liczydla.append(slownikOBIS[c][i])
 
-        wskazaniaPayload(payload, e[0], liczydla, u)
+        wskazania_payload(payload, e[0], liczydla, u)
 
 
-def wskazaniaPayload(payload, kodPPE, liczydla, u):
+def wskazania_payload(payload, kodPPE, liczydla, u):
     NewMeasurements = etree.SubElement(payload, u + "NewMeasurements")
     ReferenceTransactionId = etree.SubElement(NewMeasurements, u + "ReferenceTransactionId")
     ReferenceTransactionId.text = ReferenceTransactionIdText
@@ -224,7 +225,7 @@ def wskazaniaPayload(payload, kodPPE, liczydla, u):
         MeterRegisterEventType.text = "CK0576"
 
 
-def profilePayload(payload, kodPPE, pomiary, roczneZuzycie, doba, typ, u):
+def profile_payload(payload, kodPPE, pomiary, roczneZuzycie, doba, typ, u):
     if typ == "6.1.1.1":
         DailyMeteringPointMeasurementsForward = etree.SubElement(payload, u + "DailyMeteringPointMeasurements")
         ReferenceTransactionId = etree.SubElement(DailyMeteringPointMeasurementsForward, u + "ReferenceTransactionId")
@@ -249,9 +250,9 @@ def profilePayload(payload, kodPPE, pomiary, roczneZuzycie, doba, typ, u):
     BasicData = etree.SubElement(DailyMeteringPointMeasurementsForward, u + "BasicData")
 
     PeriodStart = etree.SubElement(BasicData, u + "PeriodStart")
-    PeriodStart.text = str(doba.date()) + "T00:00:00+02:00"
+    PeriodStart.text = str(doba) + "T00:00:00+02:00"
     PeriodEnd = etree.SubElement(BasicData, u + "PeriodEnd")
-    PeriodEnd.text = str(doba.date()) + "T23:59:59+02:00"
+    PeriodEnd.text = str(doba) + "T23:59:59+02:00"
 
     if not typ == "7.1.1.4":
         DataVersionNumber = etree.SubElement(BasicData, u + "DataVersionNumber")
@@ -290,13 +291,7 @@ def profilePayload(payload, kodPPE, pomiary, roczneZuzycie, doba, typ, u):
                     QQ.text = "CK0031"
                     SEQText += 1
 
-
-def prettyprint(element, **kwargs):
-    xml = etree.tostring(element, pretty_print=True, **kwargs)
-    print(xml.decode(), end='')
-
-
-def saveToFile(element, num, katalog, doba, typ):
+def save_to_file(element, num, katalog, doba, typ):
     if typ == "6.1.1.1":
         filename = katalog + "/6.1.1.1" + str(doba.strftime("_%y-%m-%d_")) + str(num) + ".xml"
     elif typ == "7.1.1.4":
@@ -338,8 +333,7 @@ def validate(filename):
         print(filename + " is not valid.")
         print(xmlschema.error_log)
 
-
-def readFile(filename):
+def read_ppe_file(filename):
     data = []
     with open(filename, mode='r') as file:
         for line in file.readlines():
@@ -349,7 +343,7 @@ def readFile(filename):
     return data
 
 
-def szukajDlaDoby(slownik, doba):
+def szukaj_dla_doby(slownik, doba):
     slowniknew = {}
     for k in slownik.keys():
         for e in slownik[k]:
@@ -358,11 +352,11 @@ def szukajDlaDoby(slownik, doba):
     return slowniknew
 
 
-def generujProfile(ppe, profil, katalog, doba, paczka, typ):
+def generuj_profile(ppe, profil, katalog, doba, paczka, typ):
     doba = datetime.strptime(doba, "%Y%m%d").date()
-    alldata = readFile(ppe)
+    alldata = read_ppe_file(ppe)
     slownik = czytajProfileStandardowe(profil)
-    slownik = szukajDlaDoby(slownik, doba)
+    slownik = szukaj_dla_doby(slownik, doba)
     data = []
     k = 0
     count = 0
@@ -375,7 +369,7 @@ def generujProfile(ppe, profil, katalog, doba, paczka, typ):
 
         if count >= paczka:
             k += 1
-            thread = threading.Thread(target=saveToFile,
+            thread = threading.Thread(target=save_to_file,
                                       args=(koperta(data, slownik, typ, doba), k, katalog, doba, typ))
             threads.append(thread)
             thread.start()
@@ -389,7 +383,7 @@ def generujProfile(ppe, profil, katalog, doba, paczka, typ):
 
     if data:
         k += 1
-        thread = threading.Thread(target=saveToFile, args=(koperta(data, slownik, typ, doba), k, katalog, doba, typ))
+        thread = threading.Thread(target=save_to_file, args=(koperta(data, slownik, typ, doba), k, katalog, doba, typ))
         threads.append(thread)
         thread.start()
 
@@ -397,8 +391,8 @@ def generujProfile(ppe, profil, katalog, doba, paczka, typ):
         t.join()
 
 
-def generujWskazania(ppe, plikklas, katalog, paczka, typ):
-    alldata = readFile(ppe)
+def generuj_wskazania(ppe, plikklas, katalog, paczka, typ):
+    alldata = read_ppe_file(ppe)
     slownikOBIS = czytajOBIS(plikklas)
     data = []
     k = 0
@@ -412,7 +406,7 @@ def generujWskazania(ppe, plikklas, katalog, paczka, typ):
 
         if count >= paczka:
             k += 1
-            thread = threading.Thread(target=saveToFile,
+            thread = threading.Thread(target=save_to_file,
                                       args=(koperta(data, slownikOBIS, typ, None), k, katalog, today.date(), typ))
             threads.append(thread)
             thread.start()
@@ -426,13 +420,14 @@ def generujWskazania(ppe, plikklas, katalog, paczka, typ):
 
     if data:
         k += 1
-        thread = threading.Thread(target=saveToFile,
+        thread = threading.Thread(target=save_to_file,
                                   args=(koperta(data, slownikOBIS, typ, None), k, katalog, today.date(), typ))
         threads.append(thread)
         thread.start()
 
     for t in threads:
         t.join()
+
 
 
 class MyParser(argparse.ArgumentParser):
@@ -616,6 +611,46 @@ parser_walid.add_argument(
     help='Nazwa pliku wynikowego'
 )
 
+parser_dkolejki = subparsers.add_parser('do-kolejki')
+parser_dkolejki.add_argument(
+    '-i',
+    required=True,
+    dest='katalog',
+    help='Sciezka do katalogu z plikami'
+)
+parser_dkolejki.add_argument(
+    '-s',
+    required=True,
+    dest='plik_konfig',
+    help='Sciezka do pliku konfiguracyjnego'
+)
+parser_dkolejki.add_argument(
+    '-n',
+    required=False,default=4,
+    dest="liczba_watkow",
+    help='Liczba watkow, domyslnie 4'
+)
+
+parser_zkolejki = subparsers.add_parser('z-kolejki')
+parser_zkolejki.add_argument(
+    '-s',
+    required=True,
+    dest='plik_konfig',
+    help='Sciezka do pliku konfiguracyjnego'
+)
+parser_zkolejki.add_argument(
+    '-q',
+    required=True,
+    dest='kolejka',
+    help='Adres kolejki'
+)
+parser_zkolejki.add_argument(
+    '-o',
+    required=True,
+    dest='katalog',
+    help='Sciezka do katalogu wynikowego'
+)
+
 args = parser.parse_args()
 
 if args.subcommand == 'generuj-ppe':
@@ -626,22 +661,49 @@ if args.subcommand == 'generuj-ppe':
 if args.subcommand == 'generuj-6.1.1.5':
     print('ppe: %s profil standardowy: %s katalog: %s doba: %s paczka: %s' % (
     args.plik_ppe, args.plik_profil, args.katalog_wynikowy, args.doba, args.paczka))
-    generujProfile(args.plik_ppe, args.plik_profil, args.katalog_wynikowy, args.doba, args.paczka, "6.1.1.5")
+    generuj_profile(args.plik_ppe, args.plik_profil, args.katalog_wynikowy, args.doba, args.paczka, "6.1.1.5")
 if args.subcommand == 'generuj-6.1.1.1':
     print('ppe: %s profil standardowy: %s katalog: %s doba: %s paczka: %s' % (
     args.plik_ppe, args.plik_profil, args.katalog_wynikowy, args.doba, args.paczka))
-    generujProfile(args.plik_ppe, args.plik_profil, args.katalog_wynikowy, args.doba, args.paczka, "6.1.1.1")
+    generuj_profile(args.plik_ppe, args.plik_profil, args.katalog_wynikowy, args.doba, args.paczka, "6.1.1.1")
 if args.subcommand == 'generuj-7.1.1.4':
     print('ppe: %s profil standardowy: %s katalog: %s doba: %s paczka: %s' % (
     args.plik_ppe, args.plik_profil, args.katalog_wynikowy, args.doba, args.paczka))
-    generujProfile(args.plik_ppe, args.plik_profil, args.katalog_wynikowy, args.doba, args.paczka, "7.1.1.4")
+    generuj_profile(args.plik_ppe, args.plik_profil, args.katalog_wynikowy, args.doba, args.paczka, "7.1.1.4")
 if args.subcommand == 'generuj-6.2.1.1':
     print('ppe: %s plik konfiguracyjny: %s katalog: %s paczka: %s' % (
     args.plik_ppe, args.plik_konfig, args.katalog_wynikowy, args.paczka))
-    generujWskazania(args.plik_ppe, args.plik_konfig, args.katalog_wynikowy, args.paczka, "6.2.1.1")
+    generuj_wskazania(args.plik_ppe, args.plik_konfig, args.katalog_wynikowy, args.paczka, "6.2.1.1")
+
+if args.subcommand == 'do-kolejki':
+    print('katalog: %s plik konfiguracyjny: %s liczba watkow: %s' % (args.katalog, args.plik_konfig,args.liczba_watkow))
+    config = load_config(args.plik_konfig)
+    init_logging('log.txt')
+    num_threads = args.liczba_watkow
+    folder = args.katalog
+    files = [os.path.join(folder, f) for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as executor:
+        futures = {executor.submit(send_file_to_queue, config, file): file for file in files[:num_threads]}
+        logging.info(futures)
+
+        for file in files[num_threads:]:
+            done, _ = concurrent.futures.wait(futures, return_when=concurrent.futures.FIRST_COMPLETED)
+            for future in done:
+                futures.pop(future)
+            futures[executor.submit(send_file_to_queue, config, file)] = file
+
+if args.subcommand == 'z-kolejki':
+    print('kolejka: %s katalog wynikowy: %s plik konfiguracyjny: %s' % (args.kolejka,args.katalog, args.plik_konfig))
+    config = load_config(args.plik_konfig)
+    init_logging('log.txt')
+    que_address= args.kolejka
+    folder = args.katalog
+    get_messages_from_queue(args.kolejka, config, folder)
+
+
 
 if args.subcommand == 'waliduj':
-
     if isdir(args.plik):
         if args.plik_wynikowy is None:
             for filename in listdir(args.plik):
@@ -653,7 +715,6 @@ if args.subcommand == 'waliduj':
                 with open(args.plik_wynikowy, 'a') as f:
                     with redirect_stdout(f):
                         validate(pathname)
-
     else:
         if args.plik_wynikowy is None:
             validate(args.plik)
